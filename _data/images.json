@@ -1,0 +1,24 @@
+[
+    {
+        "name": "base.qcow2",
+        "packages": [
+            "less",
+            "vim",
+            "sudo",
+            "openssh-server",
+            "curl",
+	    "bpftool",
+	    "iproute2",
+	    "util-linux"
+        ],
+        "actions": [
+            {
+                "comment": "disable password for root",
+                "op": {
+                    "Cmd": "passwd -d root"
+                },
+                "type": "run-command"
+            }
+        ]
+    }
+]
