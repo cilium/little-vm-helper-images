@@ -6,5 +6,5 @@ WORKDIR /data
 RUN lvh images build --dir . 2>&1
 
 FROM busybox
-COPY --from=builder /data/images/base.qcow2 /images/base.qcow2
-RUN gzip /images/base.qcow2
+COPY --from=builder /data/images/base.qcow2 /data/images/base.qcow2
+RUN gzip /data/images/base.qcow2
