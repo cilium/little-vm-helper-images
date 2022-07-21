@@ -10,7 +10,19 @@ DOCKER ?= docker
 KERNEL_VERSIONS=4.19 5.4 5.10 bpf-next
 
 .PHONY: all
-all: images kernels
+all:
+	@echo "Available targets:"
+	@echo "  images:           build root fs images"
+	@echo "  kernels:          build root kernel images"
+	@echo "  quay-dockerfiles: create dockerfiles for quay builder"
+
+# quay builder does not support build args :( so we need to build one dockerfile per kernel
+.PHONY:  quay-dockerfiles
+quay-dockerfiles:
+	for v in $(KERNEL_VERSIONS) ; do \
+		sed <dockerfiles/kernel-image -e "s/ARG KERNEL_VER=.*$$/ARG KERNEL_VER=$$v/" > dockerfiles/kernel-image-$$v ; \
+	done
+
 
 .PHONY: images
 images:
