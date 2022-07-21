@@ -5,5 +5,5 @@ FROM debian:sid
 WORKDIR /
 RUN  apt-get update -yq &&  \
      apt-get upgrade -yq &&  \
-     apt-get install -yq  build-essential git fakeroot xz-utils libssl-dev bc flex libelf-dev bison
+     apt-get install -yq  build-essential git fakeroot xz-utils libssl-dev bc flex libelf-dev bison pahole python3
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
