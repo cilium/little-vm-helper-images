@@ -1,4 +1,4 @@
-This repository contains (little-vm-helper)[https://github.com/cilium/little-vm-helper]
+This repository contains [little-vm-helper](https://github.com/cilium/little-vm-helper)
 configuration files and dockerfiles for building kernel and rootfs images.
 
 - [configuration](_data/images.json) for building root images (single image for now)
