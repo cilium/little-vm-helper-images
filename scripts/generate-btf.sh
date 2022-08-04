@@ -13,7 +13,7 @@ bootdir="$dir/boot"
 for fname in $bootdir/vmlinux-*; do
 	kernel=$(basename $fname)
 	ver=$(echo $kernel | sed -e 's/vmlinux-//')
-	outfile="$bootdir/kernel-${ver}.btf"
+	outfile="$bootdir/btf-${ver}"
 	rm -f $outfile
 	pahole --btf_encode_detached=$outfile $fname
 	echo "Generated $outfile"
