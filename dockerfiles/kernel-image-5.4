@@ -8,6 +8,9 @@ RUN lvh kernels --dir . fetch     2>&1 ${KERNEL_VER}
 RUN lvh kernels --dir . configure 2>&1 ${KERNEL_VER}
 RUN lvh kernels --dir . build     2>&1 ${KERNEL_VER}
 
+COPY scripts/generate-btf.sh /tmp/
+RUN /tmp/generate-btf.sh /data/kernels/${KERNEL_VER}/tar-install
+
 FROM busybox
 ARG KERNEL_VER=5.4
 COPY --from=builder /data/kernels/${KERNEL_VER}/tar-install /data/kernels/${KERNEL_VER}
