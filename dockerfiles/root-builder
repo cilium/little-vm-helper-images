@@ -2,8 +2,14 @@
 FROM quay.io/lvh-images/lvh AS lvh
 
 FROM debian:sid
-WORKDIR /
-RUN  apt-get update -yq &&  \
-     apt-get upgrade -yq &&  \
-     apt-get install -yq  mmdebstrap libguestfs-tools qemu-utils extlinux
+
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
+RUN apt-get update --quiet && \
+     apt-get upgrade --quiet --yes &&  \
+     apt-get install --quiet --yes --no-install-recommends \
+          mmdebstrap \
+          libguestfs-tools \
+          qemu-utils \
+          extlinux \
+          linux-image-amd64 \
+          zstd

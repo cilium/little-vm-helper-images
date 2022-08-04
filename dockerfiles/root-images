@@ -1,10 +1,12 @@
 # vim: set ft=dockerfile:
 FROM quay.io/lvh-images/root-builder AS builder
 COPY _data /data
-WORKDIR /data
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --dir . 2>&1
+RUN lvh images build --dir /data 2>&1
+RUN zstd --compress --rm --threads=0 /data/images/*.qcow2
 
+# Can't use scratch here because we use `docker create` elsewhere, and
+# that doesn't work without an explicit command. Satisfy this with
+# busybox.
 FROM busybox
-COPY --from=builder /data/images/base.qcow2 /data/images/base.qcow2
-RUN gzip /data/images/base.qcow2
+COPY --from=builder /data/images /data/images
