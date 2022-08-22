@@ -31,9 +31,17 @@
     },
     {
         "name": "kind.qcow2",
-        "parent": "base.qcow2",
         "image_size": "20G",
         "packages": [
+            "bpftool",
+            "ca-certificates",
+            "curl",
+            "iproute2",
+            "less",
+            "openssh-server",
+            "sudo",
+            "util-linux",
+            "vim",
             "build-essential",
             "git",
             "golang-1.19-go",
@@ -41,6 +49,20 @@
             "libarchive-tools"
         ],
         "actions": [
+            {
+                "comment": "disable password for root",
+                "op": {
+                    "Cmd": "passwd -d root"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "disable systemd timers",
+                "op": {
+                    "Cmd": "rm /lib/systemd/system/*.timer"
+                },
+                "type": "run-command"
+            },
             {
                 "comment": "env",
                 "op": {
