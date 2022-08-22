@@ -2,20 +2,100 @@
     {
         "name": "base.qcow2",
         "packages": [
-            "less",
-            "vim",
-            "sudo",
-            "openssh-server",
+            "bpftool",
+            "ca-certificates",
             "curl",
-	    "bpftool",
-	    "iproute2",
-	    "util-linux"
+            "iproute2",
+            "less",
+            "openssh-server",
+            "sudo",
+            "util-linux",
+            "vim"
         ],
         "actions": [
             {
                 "comment": "disable password for root",
                 "op": {
                     "Cmd": "passwd -d root"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "disable systemd timers",
+                "op": {
+                    "Cmd": "rm /lib/systemd/system/*.timer"
+                },
+                "type": "run-command"
+            }
+        ]
+    },
+    {
+        "name": "kind.qcow2",
+        "parent": "base.qcow2",
+        "image_size": "20G",
+        "packages": [
+            "build-essential",
+            "git",
+            "golang-1.19-go",
+            "gpg",
+            "libarchive-tools"
+        ],
+        "actions": [
+            {
+                "comment": "env",
+                "op": {
+                    "File": "/data/env.sh",
+                    "Dest": "/etc/profile.d/path.sh"
+                },
+                "type": "upload"
+            },
+            {
+                "comment": "copy-in bootstrap dir",
+                "op": {
+                    "LocalPath": "/data/bootstrap",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "enable networking",
+                "op": {
+                    "Cmd": "/bootstrap/networkd.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "configure sshd",
+                "op": {
+                    "Cmd": "/bootstrap/sshd.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "configure mounts",
+                "op": {
+                    "Cmd": "/bootstrap/fstab.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install docker",
+                "op": {
+                    "Cmd": "/bootstrap/deb-docker.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install kind",
+                "op": {
+                    "Cmd": "/bootstrap/kind.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install kubectl",
+                "op": {
+                    "Cmd": "/bootstrap/deb-k8s.sh"
                 },
                 "type": "run-command"
             }
