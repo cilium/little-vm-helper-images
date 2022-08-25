@@ -28,12 +28,12 @@
                 "type": "run-command"
             },
             {
-                "comment": "Set ulimit -n 65535",
                 "op": {
-                    "Cmd": "echo 'DefaultLimitNOFILE=65536' | tee -a /etc/systemd/system.conf"
+                    "File": "/etc/systemd/system.conf",
+                    "Line": "DefaultLimitNOFILE=65535"
                 },
-                "type": "run-command"
-            },
+                "type": "append-line"
+            }
         ]
     },
     {
@@ -71,11 +71,11 @@
                 "type": "run-command"
             },
             {
-                "comment": "Set ulimit -n 65535",
                 "op": {
-                    "Cmd": "echo 'DefaultLimitNOFILE=65536' | tee -a /etc/systemd/system.conf"
+                    "File": "/etc/systemd/system.conf",
+                    "Line": "DefaultLimitNOFILE=65535"
                 },
-                "type": "run-command"
+                "type": "append-line"
             },
             {
                 "comment": "env",
