@@ -1,5 +1,5 @@
 # vim: set ft=dockerfile:
-FROM quay.io/lvh-images/lvh AS lvh
+FROM quay.io/lvh-images/lvh:latest AS lvh
 
 FROM debian:sid
 WORKDIR /
