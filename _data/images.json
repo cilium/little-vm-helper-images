@@ -26,7 +26,14 @@
                     "Cmd": "rm /lib/systemd/system/*.timer"
                 },
                 "type": "run-command"
-            }
+            },
+            {
+                "comment": "Set ulimit -n 65535",
+                "op": {
+                    "Cmd": "echo 'DefaultLimitNOFILE=65536' | tee -a /etc/systemd/system.conf"
+                },
+                "type": "run-command"
+            },
         ]
     },
     {
@@ -60,6 +67,13 @@
                 "comment": "disable systemd timers",
                 "op": {
                     "Cmd": "rm /lib/systemd/system/*.timer"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "Set ulimit -n 65535",
+                "op": {
+                    "Cmd": "echo 'DefaultLimitNOFILE=65536' | tee -a /etc/systemd/system.conf"
                 },
                 "type": "run-command"
             },
