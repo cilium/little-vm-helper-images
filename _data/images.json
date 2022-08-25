@@ -33,6 +33,20 @@
                     "Line": "DefaultLimitNOFILE=65535"
                 },
                 "type": "append-line"
+            },
+            {
+                "op": {
+                    "File": "/etc/sysctl.conf",
+                    "Line": "fs.inotify.max_user_watches = 524288"
+                },
+                "type": "append-line"
+            },
+            {
+                "op": {
+                    "File": "/etc/sysctl.conf",
+                    "Line": "fs.inotify.max_user_instances = 512"
+                },
+                "type": "append-line"
             }
         ]
     },
@@ -74,6 +88,20 @@
                 "op": {
                     "File": "/etc/systemd/system.conf",
                     "Line": "DefaultLimitNOFILE=65535"
+                },
+                "type": "append-line"
+            },
+            {
+                "op": {
+                    "File": "/etc/sysctl.conf",
+                    "Line": "fs.inotify.max_user_watches = 524288"
+                },
+                "type": "append-line"
+            },
+            {
+                "op": {
+                    "File": "/etc/sysctl.conf",
+                    "Line": "fs.inotify.max_user_instances = 512"
                 },
                 "type": "append-line"
             },
