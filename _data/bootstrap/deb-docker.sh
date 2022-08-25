@@ -14,3 +14,6 @@ EOF
 
 apt-get update --quiet && apt-get install --quiet --yes --no-install-recommends \
     docker-ce docker-ce-cli containerd.io
+
+# for iptables 1.8.8
+update-alternatives --set iptables /usr/sbin/iptables-legacy

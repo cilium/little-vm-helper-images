@@ -1,13 +1,15 @@
-
-OCIORG ?= quay.io/lvh-images
+OCIORG 			?= quay.io/lvh-images
 LVH             ?= $(OCIORG)/lvh
 ROOT_BUILDER    ?= $(OCIORG)/root-builder
 ROOT_IMAGES     ?= $(OCIORG)/root-images
 KERNEL_BUILDER  ?= $(OCIORG)/kernel-builder
-KERNEL_IMAGES  ?= $(OCIORG)/kernel-images
-DOCKER ?= docker
+KERNEL_IMAGES	?= $(OCIORG)/kernel-images
+KIND_IMAGES		?= $(OCIORG)/kind
 
 KERNEL_VERSIONS=4.19 5.4 5.10 5.15 bpf-next
+
+DOCKER ?= docker
+export DOCKER_BUILDKIT = 1
 
 .PHONY: all
 all:
@@ -16,6 +18,7 @@ all:
 	@echo "  kernels_builder:  build root kernel builder images"
 	@echo "  images:           build root fs images"
 	@echo "  kernels:          build root kernel images"
+	@echo "  kind:             build root kind images"
 
 .PHONY: images_builder
 images_builder:
@@ -32,5 +35,11 @@ kernels_builder:
 .PHONY: kernels
 kernels: kernels_builder
 	for v in $(KERNEL_VERSIONS) ; do \
-		$(DOCKER) build --build-arg KERNEL_VER=$$v -f dockerfiles/kernel-image -t $(KERNEL_IMAGES):$$v . ; \
+		$(DOCKER) build --no-cache --build-arg KERNEL_VER=$$v -f dockerfiles/kernel-images -t $(KERNEL_IMAGES):$$v . ; \
+	done
+
+.PHONY: kind
+kind: kernels images
+	for v in $(KERNEL_VERSIONS) ; do \
+		 $(DOCKER) build --no-cache --build-arg KERNEL_VER=$$v -f dockerfiles/kind-images -t $(KIND_IMAGES):$$v . ; \
 	done
