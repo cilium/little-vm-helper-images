@@ -209,6 +209,14 @@
         [
             "--enable",
             "CONFIG_NET_NS"
+        ],
+        [
+            "--enable",
+            "CONFIG_MEMCG"
+        ],
+        [
+            "--enable",
+            "CONFIG_CGROUP_PIDS"
         ]
     ]
 }
