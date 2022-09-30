@@ -109,7 +109,6 @@
         [ "--enable", "CONFIG_IP_NF_MANGLE" ],
         [ "--enable", "CONFIG_IP_NF_RAW" ],
         [ "--enable", "CONFIG_IP6_NF_FILTER" ],
-        [ "--enable", "CONFIG_IP6_NF_IPTABLES" ],
         [ "--enable", "CONFIG_IP6_NF_MANGLE" ],
         [ "--enable", "CONFIG_IP6_NF_NAT" ],
         [ "--enable", "CONFIG_IP6_NF_RAW" ],
@@ -124,6 +123,8 @@
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_CT" ],
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_TPROXY" ],
         [ "--module", "CONFIG_VXLAN" ],
+        [ "--module", "CONFIG_IP_NF_IPTABLES" ],
+        [ "--module", "CONFIG_IP6_NF_IPTABLES" ],
 
         [ "--enable", "CONFIG_XFRM_OFFLOAD" ],
         [ "--enable", "CONFIG_XFRM_STATISTICS" ],
