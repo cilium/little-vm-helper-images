@@ -3,7 +3,7 @@ FROM quay.io/lvh-images/lvh:latest AS lvh
 
 FROM debian:sid
 
-COPY --from=lvh /ko-app/lvh /usr/bin/lvh
+COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 RUN apt-get update --quiet && \
      apt-get upgrade --quiet --yes &&  \
      apt-get install --quiet --yes --no-install-recommends \
