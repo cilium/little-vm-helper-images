@@ -10,7 +10,8 @@
             "openssh-server",
             "sudo",
             "util-linux",
-            "vim"
+            "vim",
+	    "binutils"
         ],
         "actions": [
             {
