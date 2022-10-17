@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:1.3-labs
+# vim: set ft=dockerfile:
+
+# override this with --build-arg
+ARG KERNEL_VER=bpf-next
+
+FROM quay.io/lvh-images/root-images:latest AS root-images
+FROM quay.io/lvh-images/kernel-images:"${KERNEL_VER}" AS kimg
+FROM quay.io/lvh-images/root-builder:latest AS builder
+
+ARG KERNEL_VER=bpf-next
+
+WORKDIR /data
+COPY --from=kimg /data/kernels /data/kernels
+COPY --from=root-images /data/images/complexity-test.qcow2.zst /data/images/complexity-test.qcow2.zst
+RUN zstd --decompress --rm --threads=0 /data/images/complexity-test.qcow2.zst
+
+COPY <<EOF /data/images.json
+[
+    {
+        \"name\": \"complexity_test_"${KERNEL_VER}".qcow2\",
+        \"parent\": \"complexity-test.qcow2\",
+        \"actions\": [
+            {
+                \"comment\": \"install "${KERNEL_VER}"\",
+                \"op\": {
+                    \"KernelInstallDir\": \"/data/kernels/"${KERNEL_VER}"\"
+                },
+                \"type\": \"install-kernel\"
+            },
+            { \"op\": { \"Hostname\": \"complexity-test-"${KERNEL_VER}"\"}, \"type\": \"set-hostname\" }
+        ]
+    }
+]
+EOF
+
+# mmdebstrap outputs messages in stderr, so we redirect stderr
+RUN lvh images build --image complexity_test_${KERNEL_VER}.qcow2 --dir /data 2>&1
+RUN zstd --compress --rm --threads=0 /data/images/complexity_test_${KERNEL_VER}.qcow2
+RUN rm /data/images/*.qcow2
+
+FROM busybox
+COPY --from=builder /data/images /data/images

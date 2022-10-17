@@ -5,6 +5,7 @@ ROOT_IMAGES     ?= $(OCIORG)/root-images
 KERNEL_BUILDER  ?= $(OCIORG)/kernel-builder
 KERNEL_IMAGES	?= $(OCIORG)/kernel-images
 KIND_IMAGES		?= $(OCIORG)/kind
+COMPLEXITY_TEST_IMAGES		?= $(OCIORG)/complexity-test
 
 KERNEL_VERSIONS=4.19 5.4 5.10 5.15 bpf-next
 
@@ -19,6 +20,7 @@ all:
 	@echo "  images:           build root fs images"
 	@echo "  kernels:          build root kernel images"
 	@echo "  kind:             build root kind images"
+	@echo "  complexity-test:  build root complexity-test images"
 
 .PHONY: images_builder
 images_builder:
@@ -42,4 +44,10 @@ kernels: kernels_builder
 kind: kernels images
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) build --no-cache --build-arg KERNEL_VER=$$v -f dockerfiles/kind-images -t $(KIND_IMAGES):$$v . ; \
+	done
+
+.PHONY: complexity-test
+complexity-test: kernels images
+	for v in $(KERNEL_VERSIONS) ; do \
+		 $(DOCKER) build --no-cache --build-arg KERNEL_VER=$$v -f dockerfiles/complexity-test-images -t $(COMPLEXITY_TEST_IMAGES):$$v . ; \
 	done

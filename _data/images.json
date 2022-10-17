@@ -165,5 +165,82 @@
                 "type": "run-command"
             }
         ]
+    },
+    {
+        "name": "complexity-test.qcow2",
+        "packages": [
+            "ca-certificates",
+            "openssh-server",
+            "sudo",
+            "util-linux",
+            "vim",
+            "libelf1",
+            "libmnl0",
+            "binutils",
+            "make",
+            "golang-1.19",
+            "git",
+            "gcc"
+        ],
+        "actions": [
+            {
+                "comment": "disable password for root",
+                "op": {
+                    "Cmd": "passwd -d root"
+                },
+                "type": "run-command"
+            },
+            {
+                "op": {
+                    "File": "/etc/systemd/system.conf",
+                    "Line": "DefaultLimitNOFILE=65535"
+                },
+                "type": "append-line"
+            },
+            {
+                "comment": "env",
+                "op": {
+                    "File": "/root/.bashrc",
+                    "Line": "export PATH=/root/go/bin:/usr/lib/go-1.19/bin:$PATH"
+                },
+                "type": "append-line"
+            },
+            {
+                "comment": "copy-in bootstrap dir",
+                "op": {
+                    "LocalPath": "/data/bootstrap",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "enable networking",
+                "op": {
+                    "Cmd": "/bootstrap/networkd.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "configure sshd",
+                "op": {
+                    "Cmd": "/bootstrap/sshd.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "configure mounts",
+                "op": {
+                    "Cmd": "/bootstrap/fstab.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install bpf tools",
+                "op": {
+                    "Cmd": "/bootstrap/bpf-tools.sh"
+                },
+                "type": "run-command"
+            }
+        ]
     }
 ]
