@@ -1,7 +1,7 @@
 # vim: set ft=dockerfile:
 FROM quay.io/lvh-images/lvh:latest AS lvh
 
-FROM debian:sid
+FROM ubuntu:rolling
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 RUN apt-get update --quiet && \
@@ -11,5 +11,8 @@ RUN apt-get update --quiet && \
           libguestfs-tools \
           qemu-utils \
           extlinux \
-          linux-image-amd64 \
+          linux-image-generic \
           zstd
+
+RUN apt-get install debian-archive-keyring && \
+    cp /usr/share/keyrings/debian-archive-keyring.gpg /etc/apt/trusted.gpg.d/
