@@ -1,7 +1,7 @@
 # vim: set ft=dockerfile:
 FROM quay.io/lvh-images/lvh:latest AS lvh
 
-FROM debian:sid
+FROM ubuntu:rolling
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 RUN  apt-get update -yq &&  \
