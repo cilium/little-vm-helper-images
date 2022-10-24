@@ -109,7 +109,7 @@
             {
                 "comment": "env",
                 "op": {
-                    "File": "/data/env.sh",
+                    "File": "env.sh",
                     "Dest": "/etc/profile.d/path.sh"
                 },
                 "type": "upload"
@@ -117,7 +117,7 @@
             {
                 "comment": "copy-in bootstrap dir",
                 "op": {
-                    "LocalPath": "/data/bootstrap",
+                    "LocalPath": "bootstrap",
                     "RemoteDir": "/"
                 },
                 "type": "copy-in"
@@ -164,6 +164,62 @@
                 },
                 "type": "run-command"
             }
+        ]
+    },
+    {
+        "name": "kind_4.19.qcow2",
+	"parent": "kind.qcow2",
+        "actions": [
+            {
+                "comment": "install 4.19",
+                "op": {
+                    "KernelInstallDir": "kernels/4.19/tar-install"
+                },
+                "type": "install-kernel"
+            },
+            { "op": { "Hostname": "kind-4.19"}, "type": "set-hostname" }
+        ]
+    },
+    {
+        "name": "kind_5.4.qcow2",
+	"parent": "kind.qcow2",
+        "actions": [
+            {
+                "comment": "install 5.4",
+                "op": {
+                    "KernelInstallDir": "kernels/5.4/tar-install"
+                },
+                "type": "install-kernel"
+            },
+            { "op": { "Hostname": "kind-5.4"}, "type": "set-hostname" }
+        ]
+    },
+    {
+        "name": "kind_5.10.qcow2",
+	"parent": "kind.qcow2",
+        "actions": [
+            {
+                "comment": "install 5.10",
+                "op": {
+                    "KernelInstallDir": "kernels/5.10/tar-install"
+                },
+                "type": "install-kernel"
+            },
+            { "op": { "Hostname": "kind-5.10"}, "type": "set-hostname" }
+        ]
+    },
+    {
+        "name": "kind_bpf-next.qcow2",
+	"parent": "kind.qcow2",
+        "actions": [
+            {
+                "comment": "install bpf-next",
+                "op": {
+                    "KernelInstallDir": "kernels/bpf-next/tar-install"
+                },
+                "type": "install-kernel"
+            },
+            { "op": { "Hostname": "kind-bpf-next"}, "type": "set-hostname" }
         ]
     }
 ]

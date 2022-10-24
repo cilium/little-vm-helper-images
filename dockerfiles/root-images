@@ -2,7 +2,10 @@
 FROM quay.io/lvh-images/root-builder:latest AS builder
 COPY _data /data
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --dir /data 2>&1
+
+RUN lvh images build --image base --dir /data 2>&1
+RUN lvh images build --image kind --dir /data 2>&1
+
 RUN zstd --compress --rm --threads=0 /data/images/*.qcow2
 
 # Can't use scratch here because we use `docker create` elsewhere, and
