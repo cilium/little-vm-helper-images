@@ -1,5 +1,8 @@
 # vim: set ft=dockerfile:
-FROM quay.io/lvh-images/root-builder:latest AS builder
+
+ARG ROOT_BUILDER_TAG
+
+FROM quay.io/lvh-images/root-builder:"${ROOT_BUILDER_TAG}" AS builder
 COPY _data /data
 # mmdebstrap outputs messages in stderr, so we redirect stderr
 RUN lvh images build --dir /data 2>&1
