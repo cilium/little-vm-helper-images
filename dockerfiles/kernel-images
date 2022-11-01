@@ -1,5 +1,8 @@
 # vim: set ft=dockerfile:
-FROM quay.io/lvh-images/kernel-builder AS builder
+
+ARG KERNEL_BUILDER_TAG
+
+FROM quay.io/lvh-images/kernel-builder:"${KERNEL_BUILDER_TAG}" AS builder
 ARG KERNEL_VER=bpf-next
 COPY _data /data
 WORKDIR /data

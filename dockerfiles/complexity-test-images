@@ -1,12 +1,15 @@
 # syntax=docker/dockerfile:1.3-labs
 # vim: set ft=dockerfile:
 
+ARG ROOT_IMAGES_TAG
+ARG ROOT_BUILDER_TAG
+
 # override this with --build-arg
 ARG KERNEL_VER=bpf-next
 
-FROM quay.io/lvh-images/root-images:latest AS root-images
+FROM quay.io/lvh-images/root-images:"${ROOT_IMAGES_TAG}" AS root-images
 FROM quay.io/lvh-images/kernel-images:"${KERNEL_VER}" AS kimg
-FROM quay.io/lvh-images/root-builder:latest AS builder
+FROM quay.io/lvh-images/root-builder:"${ROOT_BUILDER_TAG}" AS builder
 
 ARG KERNEL_VER=bpf-next
 
