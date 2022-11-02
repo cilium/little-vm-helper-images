@@ -41,7 +41,7 @@ jobs:
                   # deal with things like bpf-next-TAG
                   prefix=$(echo $tag | awk -F'-' '{print substr($0, 0, length($0) - length($NF))}')
                   dst_image="$image:${prefix}$name"
-                  echo $(tput setaf 2)"$src_image -> $dst_image"
+                  echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
                   docker pull $src_image
                   docker tag $src_image $dst_image
                   docker push $dst_image
