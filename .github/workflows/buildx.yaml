@@ -67,7 +67,7 @@ jobs:
 
   kernel-builder-update-tag:
     runs-on: ubuntu-latest
-    needs: kernel-builder
+    needs: [kernel-builder, generate-tag]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -83,7 +83,7 @@ jobs:
           git fetch origin
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kernel-builder tag"
+          git commit -am "update kernel-builder tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
   kernel-images:
@@ -176,7 +176,7 @@ jobs:
 
   root-builder-update-tag:
     runs-on: ubuntu-latest
-    needs: [root-builder, kernel-builder-update-tag]
+    needs: [root-builder, kernel-builder-update-tag, generate-tag]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -192,7 +192,7 @@ jobs:
           git fetch origin
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update root-builder tag"
+          git commit -am "update root-builder tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
   root-images:
@@ -241,7 +241,7 @@ jobs:
 
   root-images-update-tag:
     runs-on: ubuntu-latest
-    needs: [root-images, root-builder-update-tag]
+    needs: [root-images, root-builder-update-tag, generate-tag]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -257,11 +257,11 @@ jobs:
           git fetch origin
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update root-images tag"
+          git commit -am "update root-images tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
   kernel-update-tags:
-    needs: [kernel-images, root-images-update-tag]
+    needs: [kernel-images, root-images-update-tag, generate-tag]
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -284,7 +284,7 @@ jobs:
           git fetch origin
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kernel-images tags"
+          git commit -am "update kernel-images tags" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
 
@@ -335,7 +335,7 @@ jobs:
           echo "$key=${{ needs.generate-tag.outputs.tag }}" | tee -a $GITHUB_OUTPUT
 
   kind-update-tags:
-    needs: [kind-images]
+    needs: [kind-images, generate-tag]
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -358,5 +358,5 @@ jobs:
           git fetch origin
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kind images tags"
+          git commit -am "update kind images tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
