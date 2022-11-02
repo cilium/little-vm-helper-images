@@ -1,0 +1,10 @@
+# Empty for now.
+on:
+  workflow_call:
+jobs:
+  post-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: done
+        run: |
+          echo "Done!"
