@@ -1,0 +1,49 @@
+name: Image releases
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+
+# The idea here is we to reuse the images that we build during the PR phase. Since our builds are
+# not reproducabe, this allow us to perform tests in the PR and ensure that everything works as
+# expected when we do a release.
+jobs:
+  tag-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Getting image tag
+        id: tag
+        run: |
+          echo tag=${GITHUB_REF##*/} | tee -a $GITHUB_OUTPUT
+      - name: setup docker buildx
+        uses: docker/setup-buildx-action@v2
+      - name: quay login
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+      - name: tag images
+        run: |
+          name=${{ steps.tag.outputs.tag }}
+          echo $name
+          for f in $(find ./versions -type f ! -name README.md)
+          do
+              img=$(basename $f)
+              image="quay.io/lvh-images/$img"
+              cat $f | while read tag
+              do
+                  src_image="$image:$tag"
+                  # deal with things like bpf-next-TAG
+                  prefix=$(echo $tag | awk -F'-' '{print substr($0, 0, length($0) - length($NF))}')
+                  dst_image="$image:${prefix}$name"
+                  echo $(tput setaf 2)"$src_image -> $dst_image"
+                  docker pull $src_image
+                  docker tag $src_image $dst_image
+                  docker push $dst_image
+              done
+          done
