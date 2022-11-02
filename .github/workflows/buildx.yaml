@@ -15,12 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
+      orig_ref: ${{ steps.tag.outputs.orig_ref }}
     steps:
       - name: generate tag
         id: tag
         run: |
           tag=$(date +%Y%m%d.%H%M%S)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
+          echo "orig_ref=${{ github.event.pull_request.head.sha }}" | tee -a $GITHUB_OUTPUT
 
   # Kernel builder will build the image for bulding kernels
   kernel-builder:
@@ -360,3 +362,29 @@ jobs:
           git config user.email "ghabot@does.not.exist.cilium.org"
           git commit -am "update kind images tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
+  rebase:
+    needs: [kind-update-tags, generate-tag]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: rebase
+        run: |
+          git config user.name "GH action"
+          git config user.email "ghabot@does.not.exist.cilium.org"
+          git fetch origin
+          git reset --soft ${{ needs.generate-tag.outputs.orig_ref }}
+          f=$(mktemp)
+          echo "GHA: update tags" >> $f
+          echo "" >> $f
+          echo "info:" >> $f
+          cat << EOF >> $f
+          ${{ toJSON(needs.generate-tag.outputs) }}
+          EOF
+          git commit -a -F $f --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
+          git push --force origin HEAD:${{ github.event.pull_request.head.ref }}
+
