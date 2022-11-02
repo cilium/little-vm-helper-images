@@ -1,26 +1,15 @@
+
 This repository contains [little-vm-helper](https://github.com/cilium/little-vm-helper)
-configuration files and dockerfiles for building kernel and rootfs images.
-
-## Configuration
-
-- [configuration](_data/images.json) for building root images. There are currently two root images:
-  base and kind. The former is intended for simple tests (e.g., [tetragon unit
-  tests](https://github.com/cilium/tetragon/tree/main/tests/vmtests)) and the latter
-  for more involved tests that use kind.
-
-- [dockerfile](./dockerfiles/root-builder) for a container that can be used to build root images
-- [dockerfile](./dockerfiles/root-images) for a container with the base root images
-- [dockerfile](./dockerfiles/kind-images) for a container with the kind root images
-- [dockerfile](./dockerfiles/kernel-builder) for a container that can be used to build kernels
-- [dockerfile](./dockerfiles/kernel-imags) for a container with the kernel images
+configuration files and dockerfiles for building kernel and rootfs images. The latter are stored in
+OCI images (https://quay.io/organization/lvh-images) so that they can be used in
+testing/development.
 
 ## Use
 
-The easiest way to use this repository is via the Makefile, which uses docker. `make` without
-arguments will print a list of targets. Alternatively, https://github.com/cilium/little-vm-helper/
-can be used directly, which is  faster but requres the necessary tools (e.g., guestfs-tools) to be
-installed in the host.
-
+The easiest way to use this repository is via the Makefile, which performs the builds in docker
+containers that include all the necessary dependnecies. `make` without arguments will print a list
+of targets. Alternatively, [lvh](https://github.com/cilium/little-vm-helper/) can be used directly,
+which is  faster but requres the necessary tools (e.g., guestfs-tools) to be installed in the host.
 
 ### Build and start a VM using Makefile
 
@@ -46,3 +35,25 @@ The command below will directly buid the base image, and use it to boot a VM.
 $ lvh images --dir _data build --image base.qcow2
 $ lvh  run --host-mount $(pwd) --image _data/images/base.qcow2
 ```
+
+## Configuration files
+
+### LVH configuration (under \_data)
+
+- [images.json](_data/images.json) is the configuration for building root images. There are two root images:
+  base and kind. The former is intended for simple tests (e.g., [tetragon unit
+  tests](https://github.com/cilium/tetragon/tree/main/tests/vmtests)) and the latter
+  for kind-based tests.
+
+- [kernels.json](_data/kernels.json) is the configuration for the various kernes.
+
+### Dockerfiles
+
+- [kernel-builder](./dockerfies/kernel-builder) builds a container for building kernel images
+  images
+- [kernel-images](./dockerfies/kernel-images) builds a container with the kernel images
+- [root-builder](./dockerfies/root-builder) builds a container for building root images
+- [root-images](./dockerfies/root-images) builds a container with all the root images
+- [kind-images](./dockerfies/kind-images) builds kernel-specific version of the kind image
+- [complexity-test-images](./dockerfies/complexity-test-images) builds kernel-specific versions of
+  the complexity-test-image
