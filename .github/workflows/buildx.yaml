@@ -318,6 +318,11 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+      - name: kernel image tags
+        id: kimg
+        run: |
+          tag=$(grep -- ${{ matrix.kernel }} <versions/kernel-images)
+          echo "tag=$tag" | tee -a $GITHUB_OUTPUT
       - name: build and push
         uses: docker/build-push-action@v3
         with:
@@ -327,6 +332,7 @@ jobs:
           allow: |
             security.insecure
           build-args: |
+            "KERNEL_IMAGE_TAG=${{ steps.kimg.outputs.tag }}"
             "KERNEL_VER=${{ matrix.kernel }}"
           file: dockerfiles/kind-images
           tags: quay.io/lvh-images/kind:${{ matrix.kernel }}-${{ needs.generate-tag.outputs.tag }}
