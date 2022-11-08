@@ -11,7 +11,7 @@ KERNEL_BUILDER_TAG        ?= latest
 ROOT_BUILDER_TAG          ?= latest
 ROOT_IMAGES_TAG           ?= latest
 
-KERNEL_VERSIONS=4.19 5.4 5.10 5.15 bpf-next
+KERNEL_VERSIONS=4.9 4.19 5.4 5.10 5.15 bpf-next
 
 DOCKER ?= docker
 export DOCKER_BUILDKIT = 1
