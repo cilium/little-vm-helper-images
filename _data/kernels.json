@@ -19,10 +19,6 @@
         {
             "name": "4.19",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-4.19.y"
-        },
-        {
-            "name": "4.9",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-4.9.y"
         }
     ],
     "common_opts": [
