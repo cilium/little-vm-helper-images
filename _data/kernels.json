@@ -110,6 +110,13 @@
         [ "--module", "CONFIG_IP_NF_TARGET_REDIRECT" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_COMMENT" ],
 
+        [ "--enable", "CONFIG_IP_NF_TARGET_REJECT" ],
+        [ "--enable", "CONFIG_IP6_NF_TARGET_REJECT" ],
+        [ "--module", "CONFIG_NETFILTER_XT_MATCH_STATISTIC" ],
+        [ "--module", "CONFIG_IP_VS_RR" ],
+        [ "--module", "CONFIG_IP_VS_WRR" ],
+        [ "--module", "CONFIG_IP_VS_SH" ],
+
         [ "--enable", "CONFIG_IP_NF_MANGLE" ],
         [ "--enable", "CONFIG_IP_NF_RAW" ],
         [ "--enable", "CONFIG_IP6_NF_FILTER" ],
