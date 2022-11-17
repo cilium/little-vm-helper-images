@@ -28,7 +28,7 @@ all:
 
 .PHONY: kernel-builder
 kernel-builder:
-	$(DOCKER) build -f dockerfiles/kernel-builder-t $(KERNEL_BUILDER):$(KERNEL_BUILDER_TAG) .
+	$(DOCKER) build -f dockerfiles/kernel-builder -t $(KERNEL_BUILDER):$(KERNEL_BUILDER_TAG) .
 
 .PHONY: root-builder
 root-builder:
@@ -50,7 +50,7 @@ kernel-images: kernel-builder
 	done
 
 .PHONY: kind
-kind: kernels images
+kind: kernel-images
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) build --no-cache \
 			--build-arg KERNEL_VER=$$v \
