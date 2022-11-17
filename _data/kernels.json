@@ -54,6 +54,7 @@
         [ "--enable", "CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT" ],
         [ "--enable", "CONFIG_DEBUG_INFO" ],
         [ "--enable", "CONFIG_FTRACE_SYSCALLS" ],
+        [ "--enable", "CONFIG_FUNCTION_TRACER" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_REGS" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS" ],
