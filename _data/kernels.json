@@ -51,6 +51,7 @@
         [ "--enable", "CONFIG_CGROUP_PIDS" ],
         [ "--enable", "CONFIG_DEBUG_INFO_BTF_MODULES" ],
         [ "--enable", "CONFIG_DEBUG_INFO_BTF" ],
+        [ "--enable", "CONFIG_PAHOLE_HAS_SPLIT_BTF" ],
         [ "--enable", "CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT" ],
         [ "--enable", "CONFIG_DEBUG_INFO" ],
         [ "--enable", "CONFIG_FTRACE_SYSCALLS" ],
