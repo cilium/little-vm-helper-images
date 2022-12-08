@@ -17,3 +17,4 @@ apt-get update --quiet && apt-get install --quiet --yes --no-install-recommends 
 
 # for iptables 1.8.8
 update-alternatives --set iptables /usr/sbin/iptables-legacy
+update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
