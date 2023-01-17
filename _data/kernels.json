@@ -198,6 +198,10 @@
         [ "--enable", "CONFIG_HYPERVISOR_GUEST" ],
         [ "--enable", "CONFIG_KVM_GUEST" ],
         [ "--enable", "CONFIG_IKCONFIG"],
-        [ "--enable", "CONFIG_IKCONFIG_PROC"]
+        [ "--enable", "CONFIG_IKCONFIG_PROC"],
+
+        [ "--enable", "CONFIG_IP_ADVANCED_ROUTER"],
+        [ "--enable", "IP_MULTIPLE_TABLES"],
+        [ "--enable", "IPV6_MULTIPLE_TABLES"]
     ]
 }
