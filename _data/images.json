@@ -66,7 +66,6 @@
             "vim",
             "build-essential",
             "git",
-            "golang-1.19-go",
             "gpg",
             "libarchive-tools"
         ],
@@ -144,6 +143,13 @@
                 "type": "run-command"
             },
             {
+                "comment": "install go",
+                "op": {
+                    "Cmd": "/bootstrap/golang.sh"
+                },
+                "type": "run-command"
+            },
+            {
                 "comment": "install docker",
                 "op": {
                     "Cmd": "/bootstrap/deb-docker.sh"
@@ -178,7 +184,6 @@
             "libmnl0",
             "binutils",
             "make",
-            "golang-1.19",
             "git",
             "gcc"
         ],
@@ -201,7 +206,7 @@
                 "comment": "env",
                 "op": {
                     "File": "/root/.bashrc",
-                    "Line": "export PATH=/root/go/bin:/usr/lib/go-1.19/bin:$PATH"
+                    "Line": "export PATH=/root/go/bin:/usr/local/go/bin:$PATH"
                 },
                 "type": "append-line"
             },
@@ -231,6 +236,13 @@
                 "comment": "configure mounts",
                 "op": {
                     "Cmd": "/bootstrap/fstab.sh"
+                },
+                "type": "run-command"
+            },
+            {
+                "comment": "install go",
+                "op": {
+                    "Cmd": "/bootstrap/golang.sh"
                 },
                 "type": "run-command"
             },
