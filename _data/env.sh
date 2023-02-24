@@ -1,3 +1,3 @@
 #!/bin/sh
 
-export PATH="/root/go/bin:/usr/lib/go-1.19/bin:$PATH"
+export PATH="/root/go/bin:/usr/local/go/bin:$PATH"
