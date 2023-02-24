@@ -1,6 +1,6 @@
 # vim: set ft=dockerfile:
 
-ARG ROOT_BUILDER_TAG=20230125.135737
+ARG ROOT_BUILDER_TAG=20230224.113101
 
 FROM quay.io/lvh-images/root-builder:"${ROOT_BUILDER_TAG}" AS builder
 COPY _data /data
