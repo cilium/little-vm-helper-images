@@ -101,9 +101,10 @@ jobs:
       5-15-tag: ${{ steps.tag.outputs.k515 }}
       6-0-tag: ${{ steps.tag.outputs.k60 }}
       bpf-next-tag: ${{ steps.tag.outputs.kbpfnext }}
+      centos8-tag: ${{ steps.tag.outputs.centos8 }}
     strategy:
       matrix:
-        kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "bpf-next" ]
+        kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "bpf-next", "centos8" ]
     steps:
     - name: checkout
       uses: actions/checkout@v3
@@ -276,7 +277,7 @@ jobs:
           TAGS: ${{ toJSON(needs.kernel-images.outputs) }}
         run: |
           truncate -s 0 versions/kernel-images
-          for k in "4.19" "5.4" "5.10" "5.15" "6.0" "bpf-next"
+          for k in "4.19" "5.4" "5.10" "5.15" "6.0" "bpf-next" "centos8"
           do
               key="$(echo $k | tr '.' '-')-tag"
               tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
@@ -295,7 +296,7 @@ jobs:
     needs: [ generate-tag, kernel-update-tags, root-images-update-tag ]
     strategy:
       matrix:
-        kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "bpf-next" ]
+        kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "bpf-next", "centos8" ]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
@@ -307,6 +308,7 @@ jobs:
       5-15-tag: ${{ steps.tag.outputs.k515 }}
       6-0-tag: ${{ steps.tag.outputs.k60 }}
       bpf-next-tag: ${{ steps.tag.outputs.kbpfnext }}
+      centos8-tag: ${{ steps.tag.outputs.centos8 }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -357,7 +359,7 @@ jobs:
           TAGS: ${{ toJSON(needs.kind-images.outputs) }}
         run: |
           truncate -s 0 versions/kind
-          for k in "4.19" "5.4" "5.10" "5.15" "6.0" "bpf-next"
+          for k in "4.19" "5.4" "5.10" "5.15" "6.0" "bpf-next" "centos8"
           do
               key="$(echo $k | tr '.' '-')-tag"
               tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
