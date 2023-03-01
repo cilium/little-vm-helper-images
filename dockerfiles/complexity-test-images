@@ -22,7 +22,7 @@ RUN zstd --decompress --rm --threads=0 /data/images/complexity-test.qcow2.zst
 COPY <<EOF /data/images.json
 [
     {
-        \"name\": \"complexity_test_"${KERNEL_VER}".qcow2\",
+        \"name\": \"complexity-test_"${KERNEL_VER}".qcow2\",
         \"parent\": \"complexity-test.qcow2\",
         \"actions\": [
             {
@@ -39,8 +39,8 @@ COPY <<EOF /data/images.json
 EOF
 
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --image complexity_test_${KERNEL_VER}.qcow2 --dir /data 2>&1
-RUN zstd --compress --rm --threads=0 /data/images/complexity_test_${KERNEL_VER}.qcow2
+RUN lvh images build --image complexity-test_${KERNEL_VER}.qcow2 --dir /data 2>&1
+RUN zstd --compress --rm --threads=0 /data/images/complexity-test_${KERNEL_VER}.qcow2
 RUN rm /data/images/*.qcow2
 
 FROM busybox
