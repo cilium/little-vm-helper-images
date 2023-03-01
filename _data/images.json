@@ -176,6 +176,7 @@
         "name": "complexity-test.qcow2",
         "packages": [
             "ca-certificates",
+            "curl",
             "openssh-server",
             "sudo",
             "util-linux",
