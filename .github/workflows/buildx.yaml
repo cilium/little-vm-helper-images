@@ -54,7 +54,7 @@ jobs:
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
       - name: build and push
         if: ${{ steps.check.outputs.build == 'y' }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
@@ -118,7 +118,7 @@ jobs:
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_ROBOT_TOKEN }}
     - name: build and push
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         context: .
         push: true
@@ -164,7 +164,7 @@ jobs:
       - name: build and push
         if: ${{ steps.check.outputs.build == 'y' }}
         id: build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
@@ -227,7 +227,7 @@ jobs:
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
       - name: build and push
         if: ${{ steps.check.outputs.build == 'y' }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
@@ -326,7 +326,7 @@ jobs:
           tag=$(grep -- ${{ matrix.kernel }} <versions/kernel-images)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
       - name: build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
@@ -406,7 +406,7 @@ jobs:
           tag=$(grep -- ${{ matrix.kernel }} <versions/kernel-images)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
       - name: build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
