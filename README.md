@@ -49,11 +49,11 @@ $ lvh  run --host-mount $(pwd) --image _data/images/base.qcow2
 
 ### Dockerfiles
 
-- [kernel-builder](./dockerfies/kernel-builder) builds a container for building kernel images
+- [kernel-builder](./dockerfiles/kernel-builder) builds a container for building kernel images
   images
-- [kernel-images](./dockerfies/kernel-images) builds a container with the kernel images
-- [root-builder](./dockerfies/root-builder) builds a container for building root images
-- [root-images](./dockerfies/root-images) builds a container with all the root images
-- [kind-images](./dockerfies/kind-images) builds kernel-specific version of the kind image
-- [complexity-test-images](./dockerfies/complexity-test-images) builds kernel-specific versions of
+- [kernel-images](./dockerfiles/kernel-images) builds a container with the kernel images
+- [root-builder](./dockerfiles/root-builder) builds a container for building root images
+- [root-images](./dockerfiles/root-images) builds a container with all the root images
+- [kind-images](./dockerfiles/kind-images) builds kernel-specific version of the kind image
+- [complexity-test-images](./dockerfiles/complexity-test-images) builds kernel-specific versions of
   the complexity-test-image
