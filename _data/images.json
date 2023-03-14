@@ -207,10 +207,10 @@
             {
                 "comment": "env",
                 "op": {
-                    "File": "/root/.bashrc",
-                    "Line": "export PATH=/root/go/bin:/usr/local/go/bin:$PATH"
+                    "File": "/data/env.sh",
+                    "Dest": "/etc/profile.d/path.sh"
                 },
-                "type": "append-line"
+                "type": "upload"
             },
             {
                 "comment": "copy-in bootstrap dir",
