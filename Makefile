@@ -49,7 +49,7 @@ kernel-images: kernel-builder
 	done
 
 .PHONY: kind
-kind: kernel-images
+kind: kernel-images root-images
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) build --no-cache \
 			--build-arg KERNEL_VER=$$v \
