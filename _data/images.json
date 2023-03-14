@@ -67,7 +67,8 @@
             "build-essential",
             "git",
             "gpg",
-            "libarchive-tools"
+            "libarchive-tools",
+            "ethtool"
         ],
         "actions": [
             {
