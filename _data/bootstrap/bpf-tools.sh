@@ -2,7 +2,7 @@
 
 set -eu
 
-CILIUM_VERSION=v1.12.2
+CILIUM_VERSION=v1.13.1
 WORKDIR=/tmp/workspace
 OCI_DIR=cilium-oci
 UNPACKED_DIR=cilium-unpacked
