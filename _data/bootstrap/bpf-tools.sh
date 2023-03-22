@@ -8,7 +8,7 @@ OCI_DIR=cilium-oci
 UNPACKED_DIR=cilium-unpacked
 
 apt-get update
-apt-get -y install skopeo oci-image-tool
+apt-get -y --no-install-recommends install skopeo oci-image-tool
 
 mkdir $WORKDIR
 pushd $WORKDIR
@@ -48,6 +48,7 @@ popd
 rm -rf $WORKDIR
 apt-get -y --purge remove skopeo oci-image-tool
 apt-get clean
+rm -rf /var/lib/apt/lists/*
 
 # Test
 clang --version
