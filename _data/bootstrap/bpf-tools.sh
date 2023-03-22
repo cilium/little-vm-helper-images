@@ -38,8 +38,24 @@ mv $UNPACKED_DIR/usr/lib/libbpf* /usr/lib/x86_64-linux-gnu
 mv $UNPACKED_DIR/usr/local/bin/bpftool /bin
 
 # iproute2
-rm -f `which ip` # cleanup pre-installed ip
-rm -f `which tc` # cleanip pre-installed tc
+# Replace pre-install binaries with the respective version from the Cilium
+# container image. In some cases ip and tc might be symlinks, so make sure to
+# also delete the binaries they link to.
+
+_ip=$(which ip)
+if [ -L $_ip ] ; then
+    _link=$(readlink $ip)
+    rm -f $_link
+fi
+rm -f $_ip
+
+_tc=$(which tc)
+if [ -L $_ip ] ; then
+    _link=$(readlink $tc)
+    rm -f $_link
+fi
+rm -f $_tc
+
 mv $UNPACKED_DIR/usr/local/bin/ip /sbin
 mv $UNPACKED_DIR/usr/local/bin/tc /sbin
 
