@@ -2,7 +2,7 @@
 
 set -eu
 
-CILIUM_VERSION=v1.12.2
+CILIUM_VERSION=v1.13.1
 WORKDIR=/tmp/workspace
 OCI_DIR=cilium-oci
 UNPACKED_DIR=cilium-unpacked
@@ -28,7 +28,7 @@ digest=$(skopeo inspect --format "{{.Digest}}" oci:$OCI_DIR)
 oci-image-tool unpack --ref digest=$digest $OCI_DIR $UNPACKED_DIR
 
 # LLVM/Clang
-mv $UNPACKED_DIR/bin/clang $UNPACKED_DIR/bin/llc /bin
+mv $UNPACKED_DIR/usr/local/bin/clang $UNPACKED_DIR/usr/local/bin/llc /bin
 
 # libbpf
 rm /usr/lib/x86_64-linux-gnu/libbpf* # cleanup pre-installed libbpf
