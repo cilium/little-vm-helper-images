@@ -203,6 +203,9 @@
 
         [ "--enable", "CONFIG_IP_ADVANCED_ROUTER"],
         [ "--enable", "IP_MULTIPLE_TABLES"],
-        [ "--enable", "IPV6_MULTIPLE_TABLES"]
+        [ "--enable", "IPV6_MULTIPLE_TABLES"],
+
+        [ "--enable", "CONFIG_INET_DIAG"],
+        [ "--enable", "CONFIG_INET_DIAG_DESTROY"]
     ]
 }
