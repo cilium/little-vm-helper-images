@@ -403,7 +403,7 @@ jobs:
       - name: kernel image tags
         id: kimg
         run: |
-          tag=$(grep -- ${{ matrix.kernel }} <versions/kernel-images)
+          tag=$(grep -- ^${{ matrix.kernel }} <versions/kernel-images)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
       - name: build and push
         uses: docker/build-push-action@v3
