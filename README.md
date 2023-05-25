@@ -45,7 +45,7 @@ $ lvh  run --host-mount $(pwd) --image _data/images/base.qcow2
   tests](https://github.com/cilium/tetragon/tree/main/tests/vmtests)) and the latter
   for kind-based tests.
 
-- [kernels.json](_data/kernels.json) is the configuration for the various kernes.
+- [kernels.json](_data/kernels.json) is the configuration for the various kernels.
 
 ### Dockerfiles
 
