@@ -55,6 +55,10 @@
         "name": "kind.qcow2",
         "image_size": "20G",
         "packages": [
+            "jq",
+            "wget",
+            "moreutils",
+            "netcat-openbsd",
             "gpg-agent",
             "bpftool",
             "ca-certificates",
