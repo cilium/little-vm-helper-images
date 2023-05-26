@@ -3,4 +3,4 @@ set -euxo pipefail
 
 . /etc/profile
 
-GOBIN=/usr/local/bin go install sigs.k8s.io/kind@v0.14.0
+GOBIN=/usr/local/bin go install sigs.k8s.io/kind@v0.19.0
