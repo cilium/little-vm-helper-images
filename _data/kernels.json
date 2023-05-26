@@ -113,6 +113,7 @@
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_IPVS" ],
         [ "--module", "CONFIG_NF_NAT" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_RECENT" ],
+        [ "--module", "CONFIG_NETFILTER_XT_MATCH_PHYSDEV" ],
 
         [ "--module", "CONFIG_IP_NF_TARGET_REDIRECT" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_COMMENT" ],
