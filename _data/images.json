@@ -55,6 +55,7 @@
         "name": "kind.qcow2",
         "image_size": "20G",
         "packages": [
+            "gpg-agent",
             "bpftool",
             "ca-certificates",
             "curl",
