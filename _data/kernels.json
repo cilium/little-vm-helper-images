@@ -5,6 +5,10 @@
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1"
         },
         {
+            "name": "6.3",
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.3.y"
+        },
+        {
             "name": "6.0",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.0.y"
         },
