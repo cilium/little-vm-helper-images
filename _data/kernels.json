@@ -72,6 +72,7 @@
         [ "--enable", "CONFIG_HAVE_EBPF_JIT" ],
         [ "--enable", "CONFIG_IPC_NS" ],
         [ "--enable", "CONFIG_LOCALVERSION_AUTO" ],
+        [ "--enable", "CONFIG_LWTUNNEL" ],
         [ "--enable", "CONFIG_LWTUNNEL_BPF" ],
         [ "--enable", "CONFIG_MEMCG" ],
         [ "--enable", "CONFIG_MEMCG_SWAP" ],
