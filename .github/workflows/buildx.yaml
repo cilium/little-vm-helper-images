@@ -108,18 +108,19 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tag
+      - name: generate patch
         if: ${{ needs.kernel-builder.outputs.tag != '' }}
         run: |
           echo ${{ needs.kernel-builder.outputs.tag }} > versions/kernel-builder
-          git add versions/kernel-builder
+          git add --intent-to-add versions/kernel-builder
           perl -pi -e 's/^ARG KERNEL_BUILDER_TAG.*$/ARG KERNEL_BUILDER_TAG=${{ needs.kernel-builder.outputs.tag }}/' dockerfiles/*
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kernel-builder tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git diff | tee kernel-builder.patch
+      - name: upload patch
+        if: ${{ needs.kernel-builder.outputs.tag != '' }}
+        uses: actions/upload-artifact@v3
+        with:
+             name: kernel-builder
+             path: kernel-builder.patch
 
   kernel-images:
     runs-on: ubuntu-latest
@@ -232,14 +233,15 @@ jobs:
         if: ${{ needs.root-builder.outputs.tag != '' }}
         run: |
           echo ${{ needs.root-builder.outputs.tag }} > versions/root-builder
-          git add versions/root-builder
+          git add --intent-to-add versions/root-builder
           perl -pi -e 's/^ARG ROOT_BUILDER_TAG.*$/ARG ROOT_BUILDER_TAG=${{ needs.root-builder.outputs.tag }}/' dockerfiles/*
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update root-builder tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git diff | tee root-builder.patch
+      - name: upload patch
+        if: ${{ needs.root-builder.outputs.tag != '' }}
+        uses: actions/upload-artifact@v3
+        with:
+             name: root-builder
+             path: root-builder.patch
 
   root-images:
     needs: [conf, generate-tag, root-builder-update-tag]
@@ -300,18 +302,19 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tag
+      - name: generate patch
         if: ${{ needs.root-images.outputs.tag != '' }}
         run: |
           echo ${{ needs.root-images.outputs.tag }} > versions/root-images
-          git add versions/root-images
+          git add --intent-to-add versions/root-images
           perl -pi -e 's/^ARG ROOT_IMAGES_TAG.*$/ARG ROOT_IMAGES_TAG=${{ needs.root-images.outputs.tag }}/' dockerfiles/*
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update root-images tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git diff | tee root-images.patch
+      - name: upload patch
+        if: ${{ needs.root-images.outputs.tag != '' }}
+        uses: actions/upload-artifact@v3
+        with:
+             name: root-images
+             path: root-images.patch
 
   kernel-update-tags:
     needs: [kernel-images, root-images-update-tag, generate-tag]
@@ -332,13 +335,14 @@ jobs:
               tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
               echo $k-$tag >> versions/kernel-images
           done
-          git add versions/kernel-images
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kernel-images tags" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git add --intent-to-add versions/kernel-images
+          git diff | tee kernel-images.patch
+      - name: upload patch
+        if: ${{ needs.kernel-builder.outputs.tag != '' }}
+        uses: actions/upload-artifact@v3
+        with:
+             name: kernel-images
+             path: kernel-images.patch
 
 
   kind-images:
@@ -417,13 +421,13 @@ jobs:
               tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
               echo $k-$tag >> versions/kind
           done
-          git add versions/kind
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kind images tag" --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git add --intent-to-add versions/kind
+          git diff | tee kind-images.patch
+      - name: upload patch
+        uses: actions/upload-artifact@v3
+        with:
+             name: kind-images
+             path: kind-images.patch
 
   complexity-test-images:
     needs: [ conf, generate-tag, kernel-update-tags, root-images-update-tag ]
@@ -501,13 +505,13 @@ jobs:
               tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
               echo $k-$tag >> versions/complexity-test
           done
-          git add versions/complexity-test
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update complexity-test images tag" --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git add --intent-to-add versions/complexity-test
+          git diff | tee complexity-test-images.patch
+      - name: upload patch
+        uses: actions/upload-artifact@v3
+        with:
+             name: complexity-test-images
+             path: complexity-test-images.patch
 
   rebase:
     needs: [kind-update-tags, complexity-test-update-tags, generate-tag]
@@ -520,14 +524,27 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
-      - name: rebase
-        id: rebase
+
+      - name: prepare git
         run: |
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          git fetch origin
-          git reset --soft ${{ needs.generate-tag.outputs.orig_ref }}
-          git status
+
+      - name: download patches
+        uses: actions/download-artifact@v3
+        with:
+           path: /tmp/artifacts
+
+      - name: apply patches
+        run: |
+        find /tmp/artifacts -name \*.patch | xargs git-apply --index
+        git diff --cached
+
+      - name: rebase
+        id: rebase
+        run: |
+          #git reset --soft ${{ needs.generate-tag.outputs.orig_ref }}
+          #git status
           f=$(mktemp)
           echo "GHA: update tags" >> $f
           echo "" >> $f
@@ -535,8 +552,8 @@ jobs:
           cat << EOF >> $f
           ${{ toJSON(needs.generate-tag.outputs) }}
           EOF
-          git commit -a -F $f --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
-          git push --force origin HEAD:${{ github.event.pull_request.head.ref }}
+          git commit -F $f --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
           sha=$(git rev-parse HEAD)
           echo "sha=$sha" | tee -a $GITHUB_OUTPUT
 
