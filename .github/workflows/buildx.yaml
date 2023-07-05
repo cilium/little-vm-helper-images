@@ -9,10 +9,12 @@ on:
   pull_request:
 
 jobs:
+  # initial configuration
   conf:
     runs-on: ubuntu-latest
     outputs:
       dry-run: ${{ steps.configure.outputs.dry-run }}
+      tag: ${{ steps.configure.outputs.tag }}
     steps:
       - uses: actions/github-script@v6
         id: dry-run-script
@@ -34,507 +36,148 @@ jobs:
       - name: configure
         id: configure
         run: |
-           echo "dry-run=${{ steps.dry-run-script.outputs.result }}" | tee -a $GITHUB_OUTPUT
-  # First, generate a tag. We will use this tag for everything we want to build in the context of
-  # this action.
-  generate-tag:
-    runs-on: ubuntu-latest
-    needs: conf
-    outputs:
-      tag: ${{ steps.tag.outputs.tag }}
-      orig_ref: ${{ steps.tag.outputs.orig_ref }}
-    steps:
-      - name: generate tag
-        id: tag
-        run: |
+          echo "dry-run=${{ steps.dry-run-script.outputs.result }}" | tee -a $GITHUB_OUTPUT
           tag=$(date +%Y%m%d.%H%M%S)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
-          echo "orig_ref=${{ github.event.pull_request.head.sha }}" | tee -a $GITHUB_OUTPUT
 
-  # Kernel builder will build the image for bulding kernels
   kernel-builder:
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.newtag.outputs.tag }}
-    timeout-minutes: 60
-    needs: [conf, generate-tag]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: Check if we need to build the kernel builder
-        id: check
-        run: |
-          git diff --exit-code ${{ vars.GITHUB_BASE_REF }}..${{ github.event.pull_request.head.ref }} dockerfiles/kernel-builder
-          if [ $? -eq  0 ]; then
-            echo "No changes, no need to rebuild"
-            echo  "build=n" | tee -a $GITHUB_OUTPUT
-          else
-            echo "Need to rebuild"
-            echo  "build=y" | tee -a $GITHUB_OUTPUT
-          fi
-      - name: buildx
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/setup-buildx-action@v2
-      - name: quay login
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/login-action@v2
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-      - name: build and push
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          no-cache: true
-          file: dockerfiles/kernel-builder
-          tags: quay.io/lvh-images/kernel-builder:${{ needs.generate-tag.outputs.tag }}
-      - name: set new tag
-        if: ${{ steps.check.outputs.build == 'y'}}
-        id: newtag
-        run:
-          echo "tag=${{ needs.generate-tag.outputs.tag }}" | tee -a $GITHUB_OUTPUT
-
-  kernel-builder-update-tag:
-    runs-on: ubuntu-latest
-    needs: [kernel-builder, generate-tag]
-    steps:
-      - name: Checkout
-        if: ${{ needs.kernel-builder.outputs.tag != '' }}
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tag
-        if: ${{ needs.kernel-builder.outputs.tag != '' }}
-        run: |
-          echo ${{ needs.kernel-builder.outputs.tag }} > versions/kernel-builder
-          git add versions/kernel-builder
-          perl -pi -e 's/^ARG KERNEL_BUILDER_TAG.*$/ARG KERNEL_BUILDER_TAG=${{ needs.kernel-builder.outputs.tag }}/' dockerfiles/*
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kernel-builder tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+    needs: [conf]
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: kernel-builder
+     build-file: dockerfiles/kernel-builder
+     build-tag: quay.io/lvh-images/kernel-builder:${{ needs.conf.outputs.tag }}
+     check-files: dockerfiles/kernel-builder
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     patch-cmd: |
+         echo ${{ needs.conf.outputs.tag }} > versions/kernel-builder
+         perl -pi -e 's/^ARG KERNEL_BUILDER_TAG.*$/ARG KERNEL_BUILDER_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
 
   kernel-images:
-    runs-on: ubuntu-latest
-    needs: [conf, generate-tag, kernel-builder-update-tag]
-    timeout-minutes: 60
-    outputs:
-      # NB: all outputs should have the same tag, but we do this in case we ever want to change
-      # things
-      4-19-tag: ${{ steps.tag.outputs.k419 }}
-      5-4-tag: ${{ steps.tag.outputs.k54 }}
-      5-10-tag: ${{ steps.tag.outputs.k510 }}
-      5-15-tag: ${{ steps.tag.outputs.k515 }}
-      6-0-tag: ${{ steps.tag.outputs.k60 }}
-      6-3-tag: ${{ steps.tag.outputs.k63 }}
-      bpf-next-tag: ${{ steps.tag.outputs.kbpfnext }}
+    needs: [conf, kernel-builder]
     strategy:
       matrix:
         kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
-    - name: buildx
-      if: ${{ needs.conf.outputs.dry-run != 'y' }}
-      uses: docker/setup-buildx-action@v2
-    - name: quay login
-      if: ${{ needs.conf.outputs.dry-run != 'y' }}
-      uses: docker/login-action@v2
-      with:
-        registry: quay.io
-        username: ${{ secrets.QUAY_USERNAME }}
-        password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-    - name: build and push
-      if: ${{ needs.conf.outputs.dry-run != 'y' }}
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: true
-        no-cache: true
-        build-args: |
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: kernel-image-${{ matrix.kernel }}
+     build-file: dockerfiles/kernel-images
+     build-tag: quay.io/lvh-images/kernel-images:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-args: |
           "KERNEL_VER=${{ matrix.kernel }}"
-        file: dockerfiles/kernel-images
-        tags: quay.io/lvh-images/kernel-images:${{ matrix.kernel }}-${{ needs.generate-tag.outputs.tag }}
-    - name: output tag
-      id: tag
-      run: |
-        key=k$(echo ${{ matrix.kernel }} | tr -d '.-')
-        echo "$key=${{ needs.generate-tag.outputs.tag }}" | tee -a $GITHUB_OUTPUT
+     check-files: '.'
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     apply-patch: kernel-builder.patch
+     patch-cmd: |
+         echo ${{ needs.conf.outputs.tag}} > versions/kernel-${{ matrix.kernel }}-image
 
   root-builder:
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.newtag.outputs.tag }}
-    timeout-minutes: 60
-    # NB: we wait  on kernel-builder so that git commits do not race
-    needs: [conf, generate-tag ]
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: check if we need to build root buidler
-        id: check
-        run: |
-          git diff --exit-code ${{ vars.GITHUB_BASE_REF }}..${{ github.event.pull_request.head.ref }} dockerfiles/root-builder
-          if [ $? -eq  0 ]; then
-            echo "No changes, no need to rebuild"
-            echo  "build=n" | tee -a $GITHUB_OUTPUT
-          else
-            echo "Need to rebuild"
-            echo  "build=y" | tee -a $GITHUB_OUTPUT
-          fi
-      - name: buildx
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/setup-buildx-action@v2
-      - name: quay login
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/login-action@v2
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-      - name: build and push
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        id: build
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          no-cache: true
-          file: dockerfiles/root-builder
-          tags: quay.io/lvh-images/root-builder:${{ needs.generate-tag.outputs.tag }}
-      - name: set new tag
-        if: ${{ steps.check.outputs.build == 'y' }}
-        id: newtag
-        run: |
-          echo "tag=${{ needs.generate-tag.outputs.tag }}" | tee -a $GITHUB_OUTPUT
-
-  root-builder-update-tag:
-    runs-on: ubuntu-latest
-    needs: [root-builder, kernel-builder-update-tag, generate-tag]
-    steps:
-      - name: Checkout
-        if: ${{ needs.root-builder.outputs.tag != '' }}
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tag
-        if: ${{ needs.root-builder.outputs.tag != '' }}
-        run: |
-          echo ${{ needs.root-builder.outputs.tag }} > versions/root-builder
-          git add versions/root-builder
-          perl -pi -e 's/^ARG ROOT_BUILDER_TAG.*$/ARG ROOT_BUILDER_TAG=${{ needs.root-builder.outputs.tag }}/' dockerfiles/*
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update root-builder tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+    needs: [conf]
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: root-builder
+     check-files: dockerfiles/root-builder
+     build-file: dockerfiles/root-builder
+     build-tag: quay.io/lvh-images/root-builder:${{ needs.conf.outputs.tag }}
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     patch-cmd: |
+        perl -pi -e 's/^ARG ROOT_BUILDER_TAG.*$/ARG ROOT_BUILDER_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
+        echo ${{ needs.root-builder.outputs.tag }} > versions/root-builder
 
   root-images:
-    needs: [conf, generate-tag, root-builder-update-tag]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    outputs:
-      tag: ${{ steps.newtag.outputs.tag }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      # NB: this could be used to conditionally build the image
-      - name: Check if we need to build the kernel builder
-        id: check
-        run: |
-          git diff --exit-code ${{ vars.GITHUB_BASE_REF }}..${{ github.event.pull_request.head.ref }} dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
-          if [ $? -eq  0 ]; then
-            echo "No changes, no need to rebuild"
-            echo  "build=n" | tee -a $GITHUB_OUTPUT
-          else
-            echo "Need to rebuild"
-            echo  "build=y" | tee -a $GITHUB_OUTPUT
-          fi
-      - name: buildx
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/setup-buildx-action@v2
-      - name: quay login
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/login-action@v2
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-      - name: build and push
-        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          no-cache: true
-          allow: |
-            security.insecure
-          file: dockerfiles/root-images
-          tags: quay.io/lvh-images/root-images:${{ needs.generate-tag.outputs.tag }}
-      - name: set new tag
-        if: ${{ always() && !failure() && steps.check.outputs.build == 'y'}}
-        id: newtag
-        run:
-          echo "tag=${{ needs.generate-tag.outputs.tag }}" | tee -a $GITHUB_OUTPUT
-
-  root-images-update-tag:
-    runs-on: ubuntu-latest
-    needs: [root-images, root-builder-update-tag, generate-tag]
-    steps:
-      - name: Checkout
-        if: ${{ needs.root-images.outputs.tag != '' }}
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tag
-        if: ${{ needs.root-images.outputs.tag != '' }}
-        run: |
-          echo ${{ needs.root-images.outputs.tag }} > versions/root-images
-          git add versions/root-images
-          perl -pi -e 's/^ARG ROOT_IMAGES_TAG.*$/ARG ROOT_IMAGES_TAG=${{ needs.root-images.outputs.tag }}/' dockerfiles/*
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update root-images tag" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
-
-  kernel-update-tags:
-    needs: [kernel-images, root-images-update-tag, generate-tag]
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tags
-        env:
-          TAGS: ${{ toJSON(needs.kernel-images.outputs) }}
-        run: |
-          truncate -s 0 versions/kernel-images
-          for k in "4.19" "5.4" "5.10" "5.15" "6.0" "6.3" "bpf-next"
-          do
-              key="$(echo $k | tr '.' '-')-tag"
-              tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
-              echo $k-$tag >> versions/kernel-images
-          done
-          git add versions/kernel-images
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kernel-images tags" --trailer "X-GHA-TAG: ${{  needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
-
+    needs: [conf, root-builder]
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: root-images
+     check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
+     build-file: dockerfiles/root-images
+     build-tag: quay.io/lvh-images/root-images:${{ needs.conf.outputs.tag }}
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     apply-patch: root-builder.patch
+     patch-cmd: |
+        echo ${{ needs.root-images.outputs.tag }} > versions/root-images
+        perl -pi -e 's/^ARG ROOT_IMAGES_TAG.*$/ARG ROOT_IMAGES_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
 
   kind-images:
-    needs: [ conf, generate-tag, kernel-update-tags, root-images-update-tag ]
+    needs: [conf, kernel-images, root-images]
     strategy:
       matrix:
         kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    outputs:
-      # NB: all outputs should have the same tag, but we do this in case we ever want to change
-      # things
-      4-19-tag: ${{ steps.tag.outputs.k419 }}
-      5-4-tag: ${{ steps.tag.outputs.k54 }}
-      5-10-tag: ${{ steps.tag.outputs.k510 }}
-      5-15-tag: ${{ steps.tag.outputs.k515 }}
-      6-0-tag: ${{ steps.tag.outputs.k60 }}
-      6-3-tag: ${{ steps.tag.outputs.k63 }}
-      bpf-next-tag: ${{ steps.tag.outputs.kbpfnext }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: buildx
-        if: ${{ needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/setup-buildx-action@v2
-      - name: quay login
-        if: ${{ needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/login-action@v2
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-      - name: kernel image tags
-        id: kimg
-        run: |
-          tag=$(grep -- ^${{ matrix.kernel }} <versions/kernel-images)
-          echo "tag=$tag" | tee -a $GITHUB_OUTPUT
-      - name: build and push
-        if: ${{ needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          no-cache: true
-          allow: |
-            security.insecure
-          build-args: |
-            "KERNEL_IMAGE_TAG=${{ steps.kimg.outputs.tag }}"
-            "KERNEL_VER=${{ matrix.kernel }}"
-          file: dockerfiles/kind-images
-          tags: quay.io/lvh-images/kind:${{ matrix.kernel }}-${{ needs.generate-tag.outputs.tag }}
-      - name: output tag
-        id: tag
-        run: |
-          key=k$(echo ${{ matrix.kernel }} | tr -d '.-')
-          echo "$key=${{ needs.generate-tag.outputs.tag }}" | tee -a $GITHUB_OUTPUT
-
-  kind-update-tags:
-    needs: [kind-images, generate-tag]
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tags
-        env:
-          TAGS: ${{ toJSON(needs.kind-images.outputs) }}
-        run: |
-          truncate -s 0 versions/kind
-          for k in "4.19" "5.4" "5.10" "5.15" "6.0" "6.3" "bpf-next"
-          do
-              key="$(echo $k | tr '.' '-')-tag"
-              tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
-              echo $k-$tag >> versions/kind
-          done
-          git add versions/kind
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update kind images tag" --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: kind-image-${{ matrix.kernel }}
+     build-file: dockerfiles/kind-images
+     build-tag: quay.io/lvh-images/kind:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-args: |
+          "KERNEL_VER=${{ matrix.kernel }}"
+          "KERNEL_IMAGE_TAG=${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}"
+     check-files: '.'
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     apply-patch: root-images.patch
+     apply-patch-2: kernel-image-${{ matrix.kernel }}.patch
+     patch-cmd: |
+         mkdir -p versions/kind
+         echo ${{ needs.conf.outputs.tag}} > versions/kind/${{ matrix.kernel }}
 
   complexity-test-images:
-    needs: [ conf, generate-tag, kernel-update-tags, root-images-update-tag ]
+    needs: [conf, kernel-images, root-images]
     strategy:
       matrix:
         kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    outputs:
-      # NB: all outputs should have the same tag, but we do this in case we ever want to change
-      # things
-      4-19-tag: ${{ steps.tag.outputs.k419 }}
-      5-4-tag: ${{ steps.tag.outputs.k54 }}
-      5-10-tag: ${{ steps.tag.outputs.k510 }}
-      5-15-tag: ${{ steps.tag.outputs.k515 }}
-      6-0-tag: ${{ steps.tag.outputs.k60 }}
-      6-3-tag: ${{ steps.tag.outputs.k63 }}
-      bpf-next-tag: ${{ steps.tag.outputs.kbpfnext }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: buildx
-        if: ${{ needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/setup-buildx-action@v2
-      - name: quay login
-        if: ${{ needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/login-action@v2
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
-      - name: kernel image tags
-        id: kimg
-        run: |
-          tag=$(grep -- ^${{ matrix.kernel }} <versions/kernel-images)
-          echo "tag=$tag" | tee -a $GITHUB_OUTPUT
-      - name: build and push
-        if: ${{ needs.conf.outputs.dry-run != 'y' }}
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          no-cache: true
-          allow: |
-            security.insecure
-          build-args: |
-            "KERNEL_IMAGE_TAG=${{ steps.kimg.outputs.tag }}"
-            "KERNEL_VER=${{ matrix.kernel }}"
-          file: dockerfiles/complexity-test-images
-          tags: quay.io/lvh-images/complexity-test:${{ matrix.kernel }}-${{ needs.generate-tag.outputs.tag }}
-      - name: output tag
-        id: tag
-        run: |
-          key=k$(echo ${{ matrix.kernel }} | tr -d '.-')
-          echo "$key=${{ needs.generate-tag.outputs.tag }}" | tee -a $GITHUB_OUTPUT
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: complexity-test-${{ matrix.kernel }}
+     build-file: dockerfiles/complexity-test-images
+     build-tag: quay.io/lvh-images/complexity-test:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-args: |
+          "KERNEL_VER=${{ matrix.kernel }}"
+          "KERNEL_IMAGE_TAG=${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}"
+     check-files: '.'
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     apply-patch: root-images.patch
+     apply-patch-2: kernel-image-${{ matrix.kernel }}.patch
+     patch-cmd: |
+         mkdir -p versions/complexity-test
+         echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel }}
 
-  complexity-test-update-tags:
-    needs: [complexity-test-images, generate-tag, kind-update-tags]
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - name: commit tags
-        env:
-          TAGS: ${{ toJSON(needs.complexity-test-images.outputs) }}
-        run: |
-          truncate -s 0 versions/complexity-test
-          for k in "4.19" "5.4" "5.10" "5.15" "6.0" "6.3" "bpf-next"
-          do
-              key="$(echo $k | tr '.' '-')-tag"
-              tag=$(echo $TAGS | jq --raw-output ".\"$key\"")
-              echo $k-$tag >> versions/complexity-test
-          done
-          git add versions/complexity-test
-          git diff
-          git fetch origin
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
-          git commit -am "update complexity-test images tag" --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
-
-  rebase:
-    needs: [kind-update-tags, complexity-test-update-tags, generate-tag]
+  commit-changes:
+    needs: [conf, root-images, complexity-test-images, kind-images]
     runs-on: ubuntu-latest
     outputs:
-      sha: ${{ steps.rebase.outputs.sha }}
+      sha: ${{ steps.push.outputs.sha }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-      - name: rebase
-        id: rebase
+      - name: download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+           path: /tmp/artifacts
+      - name: push new version
+        id: push
         run: |
+          git switch -c tmp
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          git fetch origin
-          git reset --soft ${{ needs.generate-tag.outputs.orig_ref }}
+          find /tmp/artifacts -type f ! -size 0 | xargs git am
+          git reset --soft ${{ github.event.pull_request.head.ref }}
           git status
           f=$(mktemp)
           echo "GHA: update tags" >> $f
           echo "" >> $f
-          echo "info:" >> $f
-          cat << EOF >> $f
-          ${{ toJSON(needs.generate-tag.outputs) }}
-          EOF
           git commit -a -F $f --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
           git push --force origin HEAD:${{ github.event.pull_request.head.ref }}
           sha=$(git rev-parse HEAD)
@@ -554,14 +197,14 @@ jobs:
             })
 
   finalize:
-    needs: [conf, rebase]
+    needs: [conf, commit-changes]
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
       - uses: actions/github-script@v6
-        if: ${{ needs.rebase.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
+        if: ${{ needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
         env:
-          SHA: ${{ needs.rebase.outputs.sha }}
+          SHA: ${{ needs.commit-changes.outputs.sha }}
         with:
           script: |
             const { SHA } = process.env
@@ -573,9 +216,9 @@ jobs:
               state: 'success',
             })
       - uses: actions/github-script@v6
-        if: ${{ needs.rebase.result == 'success' && needs.conf.outputs.dry-run == 'y' }}
+        if: ${{ needs.commit-changes.result == 'success' && needs.conf.outputs.dry-run == 'y' }}
         env:
-          SHA: ${{ needs.rebase.outputs.sha }}
+          SHA: ${{ needs.commit-changes.outputs.sha }}
         with:
           script: |
             const { SHA } = process.env
@@ -587,9 +230,9 @@ jobs:
               state: 'failure',
             })
       - uses: actions/github-script@v6
-        if: ${{ needs.rebase.result != 'success' && needs.rebase.outputs.sha != '' }}
+        if: ${{ needs.commit-changes.result != 'success' && needs.commit-changes.outputs.sha != '' }}
         env:
-          SHA: ${{ needs.rebase.outputs.sha }}
+          SHA: ${{ needs.commit-changes.outputs.sha }}
         with:
           script: |
             const { SHA } = process.env
@@ -597,6 +240,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: `${ SHA }`,
-              description: "Something went wrong and rebase was not successful. Failing final check.",
+              description: "Something went wrong and commit was not successful. Failing final check.",
               state: 'failure',
             })
