@@ -9,10 +9,37 @@ on:
   pull_request:
 
 jobs:
+  conf:
+    runs-on: ubuntu-latest
+    outputs:
+      dry-run: ${{ steps.configure.outputs.dry-run }}
+    steps:
+      - uses: actions/github-script@v6
+        id: dry-run-script
+        name: dry-run-script
+        with:
+          result-encoding: string
+          script: |
+            res = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            for (const l of res.data) {
+              if (l.name == 'gha-builds/dry-run') {
+                return 'y'
+              }
+            }
+            return 'n'
+      - name: configure
+        id: configure
+        run: |
+           echo "dry-run=${{ steps.dry-run-script.outputs.result }}" | tee -a $GITHUB_OUTPUT
   # First, generate a tag. We will use this tag for everything we want to build in the context of
   # this action.
   generate-tag:
     runs-on: ubuntu-latest
+    needs: conf
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       orig_ref: ${{ steps.tag.outputs.orig_ref }}
@@ -30,7 +57,7 @@ jobs:
     outputs:
       tag: ${{ steps.newtag.outputs.tag }}
     timeout-minutes: 60
-    needs: generate-tag
+    needs: [conf, generate-tag]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -48,17 +75,17 @@ jobs:
             echo  "build=y" | tee -a $GITHUB_OUTPUT
           fi
       - name: buildx
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/setup-buildx-action@v2
       - name: quay login
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/login-action@v2
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
       - name: build and push
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -96,7 +123,7 @@ jobs:
 
   kernel-images:
     runs-on: ubuntu-latest
-    needs: [generate-tag, kernel-builder-update-tag]
+    needs: [conf, generate-tag, kernel-builder-update-tag]
     timeout-minutes: 60
     outputs:
       # NB: all outputs should have the same tag, but we do this in case we ever want to change
@@ -117,14 +144,17 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
     - name: buildx
+      if: ${{ needs.conf.outputs.dry-run != 'y' }}
       uses: docker/setup-buildx-action@v2
     - name: quay login
+      if: ${{ needs.conf.outputs.dry-run != 'y' }}
       uses: docker/login-action@v2
       with:
         registry: quay.io
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_ROBOT_TOKEN }}
     - name: build and push
+      if: ${{ needs.conf.outputs.dry-run != 'y' }}
       uses: docker/build-push-action@v3
       with:
         context: .
@@ -146,7 +176,7 @@ jobs:
       tag: ${{ steps.newtag.outputs.tag }}
     timeout-minutes: 60
     # NB: we wait  on kernel-builder so that git commits do not race
-    needs: generate-tag
+    needs: [conf, generate-tag ]
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -164,17 +194,17 @@ jobs:
             echo  "build=y" | tee -a $GITHUB_OUTPUT
           fi
       - name: buildx
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/setup-buildx-action@v2
       - name: quay login
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/login-action@v2
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
       - name: build and push
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         id: build
         uses: docker/build-push-action@v3
         with:
@@ -212,7 +242,7 @@ jobs:
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
   root-images:
-    needs: [generate-tag, root-builder-update-tag]
+    needs: [conf, generate-tag, root-builder-update-tag]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
@@ -235,17 +265,17 @@ jobs:
             echo  "build=y" | tee -a $GITHUB_OUTPUT
           fi
       - name: buildx
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/setup-buildx-action@v2
       - name: quay login
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/login-action@v2
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
       - name: build and push
-        if: ${{ steps.check.outputs.build == 'y' }}
+        if: ${{ steps.check.outputs.build == 'y' && needs.conf.outputs.dry-run != 'y' }}
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -312,7 +342,7 @@ jobs:
 
 
   kind-images:
-    needs: [ generate-tag, kernel-update-tags, root-images-update-tag ]
+    needs: [ conf, generate-tag, kernel-update-tags, root-images-update-tag ]
     strategy:
       matrix:
         kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
@@ -334,8 +364,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: buildx
+        if: ${{ needs.conf.outputs.dry-run != 'y' }}
         uses: docker/setup-buildx-action@v2
       - name: quay login
+        if: ${{ needs.conf.outputs.dry-run != 'y' }}
         uses: docker/login-action@v2
         with:
           registry: quay.io
@@ -347,6 +379,7 @@ jobs:
           tag=$(grep -- ^${{ matrix.kernel }} <versions/kernel-images)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
       - name: build and push
+        if: ${{ needs.conf.outputs.dry-run != 'y' }}
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -393,7 +426,7 @@ jobs:
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
   complexity-test-images:
-    needs: [ generate-tag, kernel-update-tags, root-images-update-tag ]
+    needs: [ conf, generate-tag, kernel-update-tags, root-images-update-tag ]
     strategy:
       matrix:
         kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
@@ -415,8 +448,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: buildx
+        if: ${{ needs.conf.outputs.dry-run != 'y' }}
         uses: docker/setup-buildx-action@v2
       - name: quay login
+        if: ${{ needs.conf.outputs.dry-run != 'y' }}
         uses: docker/login-action@v2
         with:
           registry: quay.io
@@ -428,6 +463,7 @@ jobs:
           tag=$(grep -- ^${{ matrix.kernel }} <versions/kernel-images)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
       - name: build and push
+        if: ${{ needs.conf.outputs.dry-run != 'y' }}
         uses: docker/build-push-action@v3
         with:
           context: .
