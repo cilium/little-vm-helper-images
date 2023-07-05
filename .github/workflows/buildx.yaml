@@ -512,6 +512,8 @@ jobs:
   rebase:
     needs: [kind-update-tags, complexity-test-update-tags, generate-tag]
     runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.rebase.outputs.sha }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -519,6 +521,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - name: rebase
+        id: rebase
         run: |
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
@@ -534,8 +537,66 @@ jobs:
           EOF
           git commit -a -F $f --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
           git push --force origin HEAD:${{ github.event.pull_request.head.ref }}
+          sha=$(git rev-parse HEAD)
+          echo "sha=$sha" | tee -a $GITHUB_OUTPUT
+      - uses: actions/github-script@v6
+        env:
+          SHA: ${{ steps.push.outputs.sha }}
+        with:
+          script: |
+            const { SHA } = process.env
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: `${ SHA }`,
+              description: "Commit was generated",
+              state: 'pending',
+            })
 
-  post-build:
-    needs: rebase
-    uses: ./.github/workflows/post-build.yaml
-    secrets: inherit
+  finalize:
+    needs: [conf, rebase]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - uses: actions/github-script@v6
+        if: ${{ needs.rebase.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
+        env:
+          SHA: ${{ needs.rebase.outputs.sha }}
+        with:
+          script: |
+            const { SHA } = process.env
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: `${ SHA }`,
+              description: "Images were generated and tags were updated",
+              state: 'success',
+            })
+      - uses: actions/github-script@v6
+        if: ${{ needs.rebase.result == 'success' && needs.conf.outputs.dry-run == 'y' }}
+        env:
+          SHA: ${{ needs.rebase.outputs.sha }}
+        with:
+          script: |
+            const { SHA } = process.env
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: `${ SHA }`,
+              description: "Everything went OK, but this was a dry-run. Failing final check.",
+              state: 'failure',
+            })
+      - uses: actions/github-script@v6
+        if: ${{ needs.rebase.result != 'success' && needs.rebase.outputs.sha != '' }}
+        env:
+          SHA: ${{ needs.rebase.outputs.sha }}
+        with:
+          script: |
+            const { SHA } = process.env
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: `${ SHA }`,
+              description: "Something went wrong and rebase was not successful. Failing final check.",
+              state: 'failure',
+            })
