@@ -22,7 +22,7 @@ $ make images
  => => writing image sha257:96a86e6ebb38238569c007491c3e86a056340ceb9e4a3e66959bfa6a6ca8f8a0
  => => naming to quay.io/lvh-images/root-images
 $ c=$(docker create sha256:96a86e6ebb38238569c007491c3e86a056340ceb9e4a3e66959bfa6a6ca8f8a0)
-$ docker cp $c:/data/images/base.qcow2.zst /tmp
+$ docker cp $c:/data/images/kind_bpf-next.qcow2.zst /tmp
 $ zstd --decompress /tmp/base.qcow2.zst
 $ lvh run --host-mount $(pwd) --image /tmp/base.qcow2
 ```
