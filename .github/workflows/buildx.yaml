@@ -196,8 +196,82 @@ jobs:
               state: 'pending',
             })
 
-  finalize:
+  print_image_kernels:
     needs: [conf, commit-changes]
+    if: ${{ needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install LVH cli
+        shell: bash
+        run: |
+          cid=$(docker create quay.io/lvh-images/lvh:latest)
+          docker cp $cid:/usr/bin/lvh /tmp/lvh
+          docker rm $cid
+          chmod +x /tmp/lvh
+          sudo mv /tmp/lvh /bin/lvh
+
+      - name: Install dependencies
+        run: |
+           deps="expect cpu-checker qemu-system-x86"
+           n=0
+           until [ "$n" -ge 5 ]; do
+             success=1
+             sudo apt update && \
+             sudo apt-get clean && \
+             sudo apt-get -y --no-install-recommends install ${deps} && \
+             break || success=0
+             n=$((n+1))
+             sleep 1
+           done
+           [ $success -eq 1 ] || exit 42
+
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.commit-changes.outputs.sha }}
+
+      - name: versions
+        id: versions
+        working-directory: ./versions/kind
+        run: |
+          echo "| Image | kernel version |" > /tmp/image-log
+          echo "| --- | --- |" >> /tmp/image-log
+          sudo mkdir /_images; sudo chmod 777 /_images
+          for f in $(find . -type f ); do
+            v=$(basename $f)
+            tag=$(cat $f)
+            image="quay.io/lvh-images/kind:$v-$tag"
+            echo docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
+            docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
+            zstd -d /_images/kind_$v.qcow2.zst -o /_images/kind_$v.qcow2
+            expect -c "
+                      set timeout 60
+                      spawn lvh run  --image /_images/kind_$v.qcow2
+                      expect -re \"Linux version .*\n\" { exit }
+            " | tee /tmp/expect.log
+            linux_ver=$(cat /tmp/expect.log | sed -ne 's/^.*Linux version \([^ ]\+\).*$/\1/p')
+            echo "| ${image} | ${linux_ver} |" | tee -a /tmp/image-log
+            rm /_images/*
+          done
+          echo 'IMAGE_LOG<<EOF' >> $GITHUB_ENV
+          cat /tmp/image-log >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: comment
+        uses: actions/github-script@v6
+        if: ${{ github.event.pull_request.number != '' }}
+        with:
+          script: |
+             const { IMAGE_LOG } = process.env
+             github.rest.issues.createComment({
+               issue_number: context.issue.number,
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               body: `👋\nHere are the kernel versions for the images:\n${IMAGE_LOG}\n`
+             })
+
+  finalize:
+    needs: [conf, commit-changes, print_image_kernels]
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
