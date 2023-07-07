@@ -1,6 +1,6 @@
 # vim: set ft=dockerfile:
 
-ARG KERNEL_BUILDER_TAG=20230707.141919
+ARG KERNEL_BUILDER_TAG=20230707.144757
 
 FROM quay.io/lvh-images/kernel-builder:"${KERNEL_BUILDER_TAG}" AS builder
 ARG KERNEL_VER=bpf-next
