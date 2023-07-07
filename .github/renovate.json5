@@ -1,6 +1,47 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:base",
+    ":gitSignOff",
+    "helpers:pinGitHubActionDigests"
+  ],
+  // This ensures that the gitAuthor and gitSignOff fields match
+  "gitAuthor": "renovate[bot] <bot@renovateapp.com>",
+  "includePaths": [
+    ".github/workflows/**",
+  ],
+  "pinDigests": true,
+  "ignorePresets": [":prHourlyLimit2"],
+  "separateMajorMinor": true,
+  "separateMultipleMajor": true,
+  "separateMinorPatch": true,
+  "pruneStaleBranches": true,
+  "baseBranches": [
+    "main"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true
+  },
+  "labels": [
+    "dependencies",
+    "renovate/stop-updating",
+  ],
+  "stopUpdatingLabel": "renovate/stop-updating",
+  "packageRules": [
+    {
+      "groupName": "all github action dependencies",
+      "groupSlug": "all-github-action",
+      "matchPaths": [
+        ".github/workflows/**"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "digest",
+        "patch",
+        "pin",
+        "pinDigest"
+      ]
+    },
   ]
 }
