@@ -31,19 +31,15 @@ jobs:
         run: |
           name=${{ steps.tag.outputs.tag }}
           echo $name
-          for f in $(find ./versions -type f ! -name README.md)
+          for f in $(find ./versions -type f ! -name README.md -printf "%P\n")
           do
-              img=$(basename $f)
-              image="quay.io/lvh-images/$img"
-              cat $f | while read tag
-              do
-                  src_image="$image:$tag"
-                  # deal with things like bpf-next-TAG
-                  prefix=$(echo $tag | awk -F'-' '{print substr($0, 0, length($0) - length($NF))}')
-                  dst_image="$image:${prefix}$name"
-                  echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
-                  docker pull $src_image
-                  docker tag $src_image $dst_image
-                  docker push $dst_image
-              done
+              tag=$(cat ./versions/$f)
+              image=$(echo $f/$tag | sed -e 's_/_:_; s_/_-_g')
+              src_image=$(echo $f/$tag | sed -e 's_/_:_; s_/_-_g')
+              dst_image=$(echo $src_image | sed -e "s/$tag/$name/")
+              echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
+              docker pull $src_image
+              docker tag $src_image $dst_image
+              docker push $dst_image
+              docker image prune
           done
