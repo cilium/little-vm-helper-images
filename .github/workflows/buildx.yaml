@@ -122,7 +122,8 @@ jobs:
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: kernel-builder.patch
      patch-cmd: |
-         echo ${{ needs.conf.outputs.tag}} > versions/kernel-${{ matrix.kernel }}-image
+         mkdir -p versions/kernel-images
+         echo ${{ needs.conf.outputs.tag}} > versions/kernel-images/${{ matrix.kernel }}
 
   root-builder:
     needs: [conf]
