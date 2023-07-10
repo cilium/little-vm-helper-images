@@ -14,9 +14,27 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dry-run: ${{ steps.configure.outputs.dry-run }}
+      run: ${{ steps.configure.outputs.run }}
       tag: ${{ steps.configure.outputs.tag }}
       kvers: ${{ steps.kvers.outputs.result }}
     steps:
+      - uses: actions/github-script@v6
+        id: run-script
+        name: run-script
+        with:
+          result-encoding: string
+          script: |
+            res = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            for (const l of res.data) {
+              if (l.name == 'gha-builds/just-dont') {
+                return 'n'
+              }
+            }
+            return 'y'
       - uses: actions/github-script@v6
         id: dry-run-script
         name: dry-run-script
@@ -65,11 +83,13 @@ jobs:
         run: |
           echo "Kernels: ${{ steps.kvers.outputs.result }}"
           echo "dry-run=${{ steps.dry-run-script.outputs.result }}" | tee -a $GITHUB_OUTPUT
+          echo "run=${{ steps.run-script.outputs.result }}" | tee -a $GITHUB_OUTPUT
           tag=$(date +%Y%m%d.%H%M%S)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
 
   kernel-builder:
     needs: [conf]
+    if: ${{ needs.conf.outputs.run == 'y' }}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
@@ -85,6 +105,7 @@ jobs:
 
   kernel-images:
     needs: [conf, kernel-builder]
+    if: ${{ needs.conf.outputs.run == 'y' }}
     strategy:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
@@ -105,6 +126,7 @@ jobs:
 
   root-builder:
     needs: [conf]
+    if: ${{ needs.conf.outputs.run == 'y' }}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
@@ -120,6 +142,7 @@ jobs:
 
   root-images:
     needs: [conf, root-builder]
+    if: ${{ needs.conf.outputs.run == 'y' }}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
@@ -135,6 +158,7 @@ jobs:
         perl -pi -e 's/^ARG ROOT_IMAGES_TAG.*$/ARG ROOT_IMAGES_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
 
   kind-images:
+    if: ${{ needs.conf.outputs.run == 'y' }}
     needs: [conf, kernel-images, root-images]
     strategy:
       matrix:
@@ -158,6 +182,7 @@ jobs:
          echo ${{ needs.conf.outputs.tag}} > versions/kind/${{ matrix.kernel }}
 
   complexity-test-images:
+    if: ${{ needs.conf.outputs.run == 'y' }}
     needs: [conf, kernel-images, root-images]
     strategy:
       matrix:
@@ -181,6 +206,7 @@ jobs:
          echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel }}
 
   commit-changes:
+    if: ${{ needs.conf.outputs.run == 'y' }}
     needs: [conf, root-images, complexity-test-images, kind-images]
     runs-on: ubuntu-latest
     outputs:
@@ -226,7 +252,7 @@ jobs:
 
   print_image_kernels:
     needs: [conf, commit-changes]
-    if: ${{ needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
+    if: ${{ needs.conf.outputs.run == 'y' && needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
     runs-on: ubuntu-latest
     steps:
       - name: Install LVH cli
