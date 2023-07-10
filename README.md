@@ -57,3 +57,32 @@ $ lvh  run --host-mount $(pwd) --image _data/images/base.qcow2
 - [kind-images](./dockerfiles/kind-images) builds kernel-specific version of the kind image
 - [complexity-test-images](./dockerfiles/complexity-test-images) builds kernel-specific versions of
   the complexity-test-image
+
+
+## GH actions
+
+This repository includes GH actions for automatically building and pushing images. Whenever a PR is
+opened, the buildx GH action will:
+ - generate a unique tag based on the day
+ - build the images
+ - push the images with the unqique tag
+
+### How can I ensure that new rootfs images are build?
+
+The action will not build the root images unless configuration files have changed.
+There is a `check-files` input parameter that determines what files are checked to
+determine if an image will be build. If you want to ensure that an image is build, you
+can add a comment to the dockerfile of the image.
+
+### Can I only create builds for specific kernels?
+
+Yes, via `gha-builds/kernel/XXX` labes in PRs.
+
+Kernel images and rootfs images that depend on kernels are treated differently. By default, they will always be build
+because the kernels might have been updated. This can be controlled with adding `gha-buidlds/kernel/XXX` labels to the PRs.
+These labels (if added) determine what kernels versions are build. For example, adding the `gha-builds/kernel/bpf-next` label,
+results in images  for the `bpf-next` version be build.
+
+### Can I completely disable builds for a PR?
+
+Yes, you can use the `gha-builds/justdont` label.
