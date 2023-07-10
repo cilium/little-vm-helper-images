@@ -213,7 +213,7 @@ jobs:
       sha: ${{ steps.push.outputs.sha }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@96f53100ba2a5449eb71d2e6604bbcd94b9449b5 # v3.5.3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: download all artifacts
@@ -280,7 +280,7 @@ jobs:
            [ $success -eq 1 ] || exit 42
 
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@96f53100ba2a5449eb71d2e6604bbcd94b9449b5 # v3.5.3
         with:
           ref: ${{ needs.commit-changes.outputs.sha }}
 
