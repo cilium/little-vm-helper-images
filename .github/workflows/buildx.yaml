@@ -15,6 +15,7 @@ jobs:
     outputs:
       dry-run: ${{ steps.configure.outputs.dry-run }}
       tag: ${{ steps.configure.outputs.tag }}
+      kvers: ${{ steps.kvers.outputs.result }}
     steps:
       - uses: actions/github-script@v6
         id: dry-run-script
@@ -33,9 +34,36 @@ jobs:
               }
             }
             return 'n'
+      - uses: actions/github-script@v6
+        id: kvers
+        name: kernel versions
+        with:
+          script: |
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.0', '6.3', 'bpf-next' ]
+              var kernels = []
+              const kernel_label_prefix = 'gha-builds/kernel/'
+              res = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+              for (const l of res.data) {
+                  if (l.name.startsWith(kernel_label_prefix)) {
+                      s = l.name.slice(kernel_label_prefix.length)
+                      if (s.length > 0) {
+                          kernels.push(s)
+                      }
+                  }
+              }
+              
+              if (kernels.length == 0) {
+                  kernels = all_kernels
+              }
+              return kernels
       - name: configure
         id: configure
         run: |
+          echo "Kernels: ${{ steps.kvers.outputs.result }}"
           echo "dry-run=${{ steps.dry-run-script.outputs.result }}" | tee -a $GITHUB_OUTPUT
           tag=$(date +%Y%m%d.%H%M%S)
           echo "tag=$tag" | tee -a $GITHUB_OUTPUT
@@ -59,7 +87,7 @@ jobs:
     needs: [conf, kernel-builder]
     strategy:
       matrix:
-        kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
+        kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
@@ -110,7 +138,7 @@ jobs:
     needs: [conf, kernel-images, root-images]
     strategy:
       matrix:
-        kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
+        kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
@@ -133,7 +161,7 @@ jobs:
     needs: [conf, kernel-images, root-images]
     strategy:
       matrix:
-        kernel: [ "4.19", "5.4", "5.10", "5.15", "6.0", "6.3", "bpf-next" ]
+        kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
