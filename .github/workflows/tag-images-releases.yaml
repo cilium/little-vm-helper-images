@@ -41,5 +41,5 @@ jobs:
               docker pull $src_image
               docker tag $src_image $dst_image
               docker push $dst_image
-              docker image prune -f
+              docker image rmi $src_image $dst_image
           done
