@@ -30,10 +30,6 @@ oci-image-tool unpack --ref digest=$digest $OCI_DIR $UNPACKED_DIR
 # LLVM/Clang
 mv $UNPACKED_DIR/usr/local/bin/clang $UNPACKED_DIR/usr/local/bin/llc /bin
 
-# libbpf
-rm /usr/lib/x86_64-linux-gnu/libbpf* # cleanup pre-installed libbpf
-mv $UNPACKED_DIR/usr/lib/libbpf* /usr/lib/x86_64-linux-gnu
-
 # bpftool
 mv $UNPACKED_DIR/usr/local/bin/bpftool /bin
 
