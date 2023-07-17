@@ -139,7 +139,7 @@ jobs:
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      patch-cmd: |
         perl -pi -e 's/^ARG ROOT_BUILDER_TAG.*$/ARG ROOT_BUILDER_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
-        echo ${{ needs.root-builder.outputs.tag }} > versions/root-builder
+        echo ${{ needs.conf.outputs.tag }} > versions/root-builder
 
   root-images:
     needs: [conf, root-builder]
@@ -155,8 +155,8 @@ jobs:
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: root-builder.patch
      patch-cmd: |
-        echo ${{ needs.root-images.outputs.tag }} > versions/root-images
         perl -pi -e 's/^ARG ROOT_IMAGES_TAG.*$/ARG ROOT_IMAGES_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
+        echo ${{ needs.conf.outputs.tag }} > versions/root-images
 
   kind-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
@@ -233,7 +233,7 @@ jobs:
           f=$(mktemp)
           echo "GHA: update tags" >> $f
           echo "" >> $f
-          git commit -a -F $f --trailer "X-GHA-TAG: ${{ needs.generate-tag.outputs.tag }}"
+          git commit -a -F $f --trailer "X-GHA-TAG: ${{ needs.conf.outputs.tag }}"
           git push --force origin HEAD:${{ github.event.pull_request.head.ref }}
           sha=$(git rev-parse HEAD)
           echo "sha=$sha" | tee -a $GITHUB_OUTPUT

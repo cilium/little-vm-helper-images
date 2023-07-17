@@ -1,5 +1,7 @@
 # vim: set ft=dockerfile:
 
+# force-rebuild: 1
+
 ARG ROOT_BUILDER_TAG=20230707.160728
 
 FROM quay.io/lvh-images/root-builder:"${ROOT_BUILDER_TAG}" AS builder
