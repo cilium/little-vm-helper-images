@@ -1,0 +1,29 @@
+name: update bpf-next
+on:
+  # Allow manual triggers.
+  workflow_dispatch: {}
+  # Run once a day.
+  schedule:
+    - cron: "0 1 * * *"
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: commit
+        run: |
+          id=$(date +%Y%m%d.%H%M%S)
+          git switch -c bpf-next-${id}
+          git config user.name "GH action"
+          git config user.email "ghabot@does.not.exist.cilium.org"
+          echo "bpf-next $id" > misc/dummy
+          git add misc/dummy
+          git comit -a -m "bpf-next: $id"
+          git show HEAD
+      - name: push PR
+        run: |
+          gh pr create \
+            -l "gha-builds/kernel/bpf-next" \
+            --title "bpf-next: $id" \
+            --body "" \
