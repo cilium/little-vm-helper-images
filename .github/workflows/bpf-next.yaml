@@ -14,14 +14,17 @@ jobs:
       - name: commit
         run: |
           id=$(date +%Y%m%d.%H%M%S)
-          git switch -c bpf-next-${id}
+          git switch -c pr/bpf-next-${id}
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
           echo "bpf-next $id" > misc/dummy
           git add misc/dummy
-          git comit -a -m "bpf-next: $id"
+          git commit -a -m "bpf-next: $id"
           git show HEAD
+          git push --set-upstream origin pr/bpf-next-${id}
       - name: push PR
+        env:
+          GH_TOKEN: ${{ secrets.LVH_GITHUB_TOKEN }}
         run: |
           gh pr create \
             -l "gha-builds/kernel/bpf-next" \
