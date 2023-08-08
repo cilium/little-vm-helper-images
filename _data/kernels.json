@@ -172,6 +172,8 @@
         [ "--module", "CONFIG_INET6_XFRM_TUNNEL" ],
         [ "--module", "CONFIG_XFRM_ALGO" ],
         [ "--module", "CONFIG_XFRM_USER" ],
+        [ "--module", "CONFIG_NET_IPIP"],
+        [ "--module", "CONFIG_IPV6_TUNNEL"],
 
         [ "--module", "CONFIG_BONDING" ],
         [ "--module", "CONFIG_DUMMY" ],
