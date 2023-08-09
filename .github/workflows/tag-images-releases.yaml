@@ -41,5 +41,13 @@ jobs:
               docker pull $src_image
               docker tag $src_image $dst_image
               docker push $dst_image
+              # Only tag latest image on pushes to main
+              if [[ "$name" == "main" ]]; then
+                  dst_latest_image=$(echo $src_image | sed -e "s/$tag/latest-$tag/")
+                  echo -e "\033[0;32m${src_image} -> ${dst_latest_image}\e[0m";
+                  docker tag $src_image $dst_latest_image
+                  docker push $dst_latest_image
+                  docker image rmi $dst_latest_image
+              fi
               docker image rmi $src_image $dst_image
           done
