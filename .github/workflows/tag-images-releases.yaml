@@ -37,6 +37,7 @@ jobs:
               image=$(echo $f/$tag | sed -e 's_/_-ci:_; s_/_-_g')
               src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/_-ci:_; s_/_-_g')"
               dst_image=$(echo $src_image | sed -e "s/$tag/$name/")
+              dst_image=$(echo $dst_image | sed -e 's/-ci:/:/')
               echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
               docker pull $src_image
               docker tag $src_image $dst_image
