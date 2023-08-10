@@ -8,9 +8,9 @@ ARG ROOT_IMAGES_TAG=20230717.131822
 ARG KERNEL_VER=bpf-next
 ARG KERNEL_IMAGE_TAG=bpf-next
 
-FROM quay.io/lvh-images/root-images:"${ROOT_IMAGES_TAG}" AS root-images
-FROM quay.io/lvh-images/kernel-images:"${KERNEL_IMAGE_TAG}" AS kimg
-FROM quay.io/lvh-images/root-builder:"${ROOT_BUILDER_TAG}" AS builder
+FROM quay.io/lvh-images/root-images-ci:"${ROOT_IMAGES_TAG}" AS root-images
+FROM quay.io/lvh-images/kernel-images-ci:"${KERNEL_IMAGE_TAG}" AS kimg
+FROM quay.io/lvh-images/root-builder-ci:"${ROOT_BUILDER_TAG}" AS builder
 
 ARG KERNEL_VER=bpf-next
 

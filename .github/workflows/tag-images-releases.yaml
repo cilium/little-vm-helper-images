@@ -34,20 +34,20 @@ jobs:
           for f in $(find ./versions -type f ! -name README.md -printf "%P\n")
           do
               tag=$(cat ./versions/$f)
-              image=$(echo $f/$tag | sed -e 's_/_:_; s_/_-_g')
-              src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/_:_; s_/_-_g')"
+              image=$(echo $f/$tag | sed -e 's_/_-ci:_; s_/_-_g')
+              src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/_-ci:_; s_/_-_g')"
               dst_image=$(echo $src_image | sed -e "s/$tag/$name/")
               echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
               docker pull $src_image
               docker tag $src_image $dst_image
               docker push $dst_image
-              # Only tag latest image on pushes to main
+              # Only tag the "prod" image on pushes to main
               if [[ "$name" == "main" ]]; then
-                  dst_latest_image=$(echo $src_image | sed -e "s/$tag/latest-$tag/")
+                  dst_prod_image=$(echo $src_image | sed -e 's/-ci:/:/')
                   echo -e "\033[0;32m${src_image} -> ${dst_latest_image}\e[0m";
-                  docker tag $src_image $dst_latest_image
-                  docker push $dst_latest_image
-                  docker image rmi $dst_latest_image
+                  docker tag $src_image $dst_prod_image
+                  docker push $dst_prod_image
+                  docker image rmi $dst_prod_image
               fi
               docker image rmi $src_image $dst_image
           done

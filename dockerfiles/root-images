@@ -4,7 +4,7 @@
 
 ARG ROOT_BUILDER_TAG=20230707.160728
 
-FROM quay.io/lvh-images/root-builder:"${ROOT_BUILDER_TAG}" AS builder
+FROM quay.io/lvh-images/root-builder-ci:"${ROOT_BUILDER_TAG}" AS builder
 COPY _data /data
 # mmdebstrap outputs messages in stderr, so we redirect stderr
 RUN lvh images build --dir /data 2>&1
