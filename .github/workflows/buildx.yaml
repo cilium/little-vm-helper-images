@@ -95,7 +95,7 @@ jobs:
     with:
      name: kernel-builder
      build-file: dockerfiles/kernel-builder
-     build-tag: quay.io/lvh-images/kernel-builder:${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/kernel-builder-ci:${{ needs.conf.outputs.tag }}
      check-files: dockerfiles/kernel-builder
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
@@ -114,7 +114,7 @@ jobs:
     with:
      name: kernel-image-${{ matrix.kernel }}
      build-file: dockerfiles/kernel-images
-     build-tag: quay.io/lvh-images/kernel-images:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/kernel-images-ci:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel }}"
      check-files: '.'
@@ -134,7 +134,7 @@ jobs:
      name: root-builder
      check-files: dockerfiles/root-builder
      build-file: dockerfiles/root-builder
-     build-tag: quay.io/lvh-images/root-builder:${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/root-builder-ci:${{ needs.conf.outputs.tag }}
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      patch-cmd: |
@@ -150,7 +150,7 @@ jobs:
      name: root-images
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
-     build-tag: quay.io/lvh-images/root-images:${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: root-builder.patch
@@ -169,7 +169,7 @@ jobs:
     with:
      name: kind-image-${{ matrix.kernel }}
      build-file: dockerfiles/kind-images
-     build-tag: quay.io/lvh-images/kind:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/kind-ci:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}"
@@ -193,7 +193,7 @@ jobs:
     with:
      name: complexity-test-${{ matrix.kernel }}
      build-file: dockerfiles/complexity-test-images
-     build-tag: quay.io/lvh-images/complexity-test:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
+     build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel }}-${{ needs.conf.outputs.tag }}"
@@ -295,7 +295,7 @@ jobs:
           for f in $(find . -type f ); do
             v=$(basename $f)
             tag=$(cat $f)
-            image="quay.io/lvh-images/kind:$v-$tag"
+            image="quay.io/lvh-images/kind-ci:$v-$tag"
             echo docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
             docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
             zstd -d /_images/kind_$v.qcow2.zst -o /_images/kind_$v.qcow2
