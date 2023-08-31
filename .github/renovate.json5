@@ -9,6 +9,7 @@
   "gitAuthor": "renovate[bot] <bot@renovateapp.com>",
   "includePaths": [
     ".github/workflows/**",
+    "_data/bootstrap/golang.sh",
     "_data/bootstrap/kind.sh"
   ],
   "pinDigests": true,
@@ -48,6 +49,7 @@
   "regexManagers": [
     {
       "fileMatch": [
+        "^_data/bootstrap/golang\.sh$",
         "^_data/bootstrap/kind\.sh$"
       ],
       // This regex manages version strings in bootstrap files,
