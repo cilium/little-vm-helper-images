@@ -214,6 +214,7 @@
         [ "--enable", "IPV6_MULTIPLE_TABLES"],
 
         [ "--enable", "CONFIG_INET_DIAG"],
+        [ "--enable", "CONFIG_INET_UDP_DIAG"],
         [ "--enable", "CONFIG_INET_DIAG_DESTROY"]
     ]
 }
