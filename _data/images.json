@@ -11,7 +11,8 @@
             "sudo",
             "util-linux",
             "vim",
-	    "binutils"
+            "binutils",
+            "systemd-resolved"
         ],
         "actions": [
             {
@@ -73,7 +74,8 @@
             "git",
             "gpg",
             "libarchive-tools",
-            "ethtool"
+            "ethtool",
+            "systemd-resolved"
         ],
         "actions": [
             {
@@ -192,7 +194,8 @@
             "binutils",
             "make",
             "git",
-            "gcc"
+            "gcc",
+            "systemd-resolved"
         ],
         "actions": [
             {
