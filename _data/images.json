@@ -11,7 +11,8 @@
             "sudo",
             "util-linux",
             "vim",
-	    "binutils"
+            "binutils",
+            "systemd-resolved"
         ],
         "actions": [
             {
