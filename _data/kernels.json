@@ -62,6 +62,7 @@
         [ "--enable", "CONFIG_PAHOLE_HAS_SPLIT_BTF" ],
         [ "--enable", "CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT" ],
         [ "--enable", "CONFIG_DEBUG_INFO" ],
+        [ "--enable", "CONFIG_FRAME_POINTER" ],
         [ "--enable", "CONFIG_FTRACE_SYSCALLS" ],
         [ "--enable", "CONFIG_FUNCTION_TRACER" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE" ],
