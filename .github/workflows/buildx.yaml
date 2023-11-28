@@ -1,7 +1,7 @@
 # build images GH actions pipeline
 #
 # On every PR, we want to build images and tag them appropriately.
-# As the images are build, we push commits to the PR that:
+# As the images are built, we push commits to the PR that:
 #  - update the dockerfile args with the new tags
 #  - save the new tags under versions/
 name: buildx-images
