@@ -97,6 +97,8 @@
         [ "--enable", "CONFIG_VIRTIO_PCI_LIB" ],
         [ "--enable", "CONFIG_VIRTIO_PCI" ],
         [ "--enable", "CONFIG_VIRTIO" ],
+        [ "--enable", "CONFIG_FUNCTION_ERROR_INJECTION"],
+        [ "--enable", "CONFIG_BPF_KPROBE_OVERRIDE" ],
         [ "--module", "CONFIG_NET_SCH_INGRESS" ],
         [ "--module", "CONFIG_NETDEVSIM" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_BPF" ],
