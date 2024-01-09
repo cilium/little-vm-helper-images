@@ -1,4 +1,5 @@
 # vim: set ft=dockerfile:
+# Pull in lvh with https support.
 FROM quay.io/lvh-images/lvh:latest AS lvh
 
 FROM ubuntu:rolling
