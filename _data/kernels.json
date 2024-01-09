@@ -27,10 +27,6 @@
         {
             "name": "centos8",
             "url": "https://gitlab.com/redhat/centos-stream/src/kernel/centos-stream-8.git?depth=1#c8s",
-            "extra_make_args": [
-                "HOSTCC=gcc-10",
-                "CC=gcc-10"
-            ],
             "opts": [
                 ["--enable", "CONFIG_AMD_MEM_ENCRYPT"],
                 ["--enable", "CONFIG_PREEMPTION"],
