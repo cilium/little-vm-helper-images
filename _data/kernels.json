@@ -23,6 +23,19 @@
         {
             "name": "4.19",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-4.19.y"
+        },
+        {
+            "name": "centos8",
+            "url": "https://gitlab.com/redhat/centos-stream/src/kernel/centos-stream-8.git?depth=1#c8s",
+            "extra_make_args": [
+                "HOSTCC=gcc-10",
+                "CC=gcc-10"
+            ],
+            "opts": [
+                ["--enable", "CONFIG_AMD_MEM_ENCRYPT"],
+                ["--enable", "CONFIG_PREEMPTION"],
+                ["--disable", "CONFIG_RETPOLINE"]
+            ]
         }
     ],
     "common_opts": [
