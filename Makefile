@@ -2,7 +2,7 @@ OCIORG                    ?= quay.io/lvh-images
 LVH                       ?= $(OCIORG)/lvh
 ROOT_BUILDER              ?= $(OCIORG)/root-builder
 ROOT_IMAGES               ?= $(OCIORG)/root-images
-KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder
+KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder-ci
 KERNEL_IMAGES             ?= $(OCIORG)/kernel-images
 KIND_IMAGES               ?= $(OCIORG)/kind
 COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/complexity-test
@@ -10,7 +10,7 @@ COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/complexity-test
 KERNEL_BUILDER_TAG        ?= main
 ROOT_BUILDER_TAG          ?= main
 ROOT_IMAGES_TAG           ?= main
-KERNEL_VERSIONS           ?= centos8 4.19 5.4 5.10 5.15 6.1 bpf-next
+KERNEL_VERSIONS           ?= 4.19 5.4 5.10 5.15 6.1 bpf-next
 
 DOCKER ?= docker
 export DOCKER_BUILDKIT = 1
@@ -28,6 +28,10 @@ all:
 .PHONY: kernel-builder
 kernel-builder:
 	$(DOCKER) build -f dockerfiles/kernel-builder -t $(KERNEL_BUILDER):$(KERNEL_BUILDER_TAG) .
+
+.PHONY: kernel-builder-gcc8
+kernel-builder-gcc8:
+	$(DOCKER) build -f dockerfiles/kernel-builder-gcc8 -t $(KERNEL_BUILDER):gcc8-$(KERNEL_BUILDER_TAG) .
 
 .PHONY: root-builder
 root-builder:
@@ -47,6 +51,12 @@ kernel-images: kernel-builder
 			--build-arg KERNEL_VER=$$v \
 			-f dockerfiles/kernel-images -t $(KERNEL_IMAGES):$$v . ; \
 	done
+
+kernel-centos8: kernel-builder-gcc8
+	$(DOCKER) build --no-cache \
+		--build-arg KERNEL_BUILDER_TAG=gcc8-$(KERNEL_BUILDER_TAG) \
+		--build-arg KERNEL_VER=centos8 \
+		-f dockerfiles/kernel-images -t $(KERNEL_IMAGES):centos8 . ; \
 
 .PHONY: kind
 kind: kernel-images root-images

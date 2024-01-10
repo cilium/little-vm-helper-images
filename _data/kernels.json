@@ -31,7 +31,10 @@
                 ["--enable", "CONFIG_AMD_MEM_ENCRYPT"],
                 ["--enable", "CONFIG_PREEMPTION"],
                 ["--disable", "CONFIG_RETPOLINE"]
-            ]
+            ],
+	    "extra_make_args": [
+		    "V=1"
+	    ]
         }
     ],
     "common_opts": [
