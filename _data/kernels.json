@@ -99,6 +99,7 @@
         [ "--enable", "CONFIG_VIRTIO" ],
         [ "--enable", "CONFIG_FUNCTION_ERROR_INJECTION"],
         [ "--enable", "CONFIG_BPF_KPROBE_OVERRIDE" ],
+        [ "--enable", "CONFIG_FPROBE" ],
         [ "--module", "CONFIG_NET_SCH_INGRESS" ],
         [ "--module", "CONFIG_NETDEVSIM" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_BPF" ],
