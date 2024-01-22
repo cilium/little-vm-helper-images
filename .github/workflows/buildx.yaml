@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf-next' ]
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf-next', 'rhel8' ]
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
@@ -80,7 +80,12 @@ jobs:
 
               ret = []
               for (const k of kernels) {
-                  ret.push({"ver": k})
+                  if (k == "rhel8") {
+                    dockerfile = "dockerfiles/kernel-images-rhel8"
+                  } else {
+                    dockerfile = "dockerfiles/kernel-images"
+                  }
+                  ret.push({"ver": k, "dockerfile": dockerfile})
               }
               return ret
       - name: configure
@@ -118,7 +123,7 @@ jobs:
     secrets: inherit
     with:
      name: kernel-image-${{ matrix.kernel.ver }}
-     build-file: dockerfiles/kernel-images
+     build-file: ${{ matrix.kernel.dockerfile }}
      build-tag: quay.io/lvh-images/kernel-images-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
