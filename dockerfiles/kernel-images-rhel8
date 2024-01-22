@@ -1,0 +1,49 @@
+# syntax=docker/dockerfile:1.3-labs
+# vim: set ft=dockerfile:
+
+FROM quay.io/lvh-images/lvh:latest AS lvh
+
+FROM rockylinux:8 AS builder
+
+COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
+
+RUN dnf install -y 'dnf-command(builddep)' 'dnf-command(config-manager)'
+RUN dnf config-manager --set-enabled powertools
+RUN dnf builddep -y kernel
+
+FROM builder AS prepare
+
+WORKDIR /tmp
+RUN dnf download --source kernel && rpm -ivh kernel*.src.rpm
+
+WORKDIR /root/rpmbuild/SPECS
+RUN rpmbuild -bp kernel.spec --with baseonly
+
+RUN ln -s /root/rpmbuild/BUILD/kernel-*/linux-* /tmp/build
+WORKDIR /tmp/build
+
+RUN mkdir patches
+COPY patches/rhel8/*.patch patches/
+RUN for p in patches/*.patch; do echo "Applying $p"; patch -p1 < "$p" || exit 1; done
+
+# Emulate InitBuildVars() from kernel.spec
+RUN make -s mrproper
+RUN cp configs/kernel-*-$(uname -m)-debug.config .config
+
+# Remove all RHEL modules
+RUN sed --in-place -E -e 's/^(CONFIG_[^=]+)=m/# \1 is not set/' .config
+
+COPY _data /data
+
+RUN lvh kernels --dir /data raw_configure . rhel8 2>&1
+
+FROM prepare AS build
+
+RUN make -j $(nproc)
+RUN make tar-pkg
+
+COPY scripts/generate-btf.sh /tmp/
+RUN /tmp/generate-btf.sh /tmp/build/tar-install
+
+FROM busybox as kernel
+COPY --from=build /tmp/build/tar-install /data/kernels/rhel8
