@@ -2,7 +2,7 @@
 # vim: set ft=dockerfile:
 
 ARG ROOT_BUILDER_TAG=20230707.160728
-ARG ROOT_IMAGES_TAG=20231124.100406
+ARG ROOT_IMAGES_TAG=20240125.104921
 
 # override this with --build-arg
 ARG KERNEL_VER=bpf-next
