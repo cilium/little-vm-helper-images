@@ -9,6 +9,7 @@
   "gitAuthor": "renovate[bot] <bot@renovateapp.com>",
   "includePaths": [
     ".github/workflows/**",
+    "_data/bootstrap/bpf-tools.sh",
     "_data/bootstrap/golang.sh",
     "_data/bootstrap/kind.sh"
   ],
@@ -51,6 +52,7 @@
   "regexManagers": [
     {
       "fileMatch": [
+        "^_data/bootstrap/bpf-tools\.sh$",
         "^_data/bootstrap/golang\.sh$",
         "^_data/bootstrap/kind\.sh$"
       ],
