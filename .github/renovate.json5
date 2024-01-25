@@ -46,7 +46,9 @@
         "pinDigest"
       ],
       // Don't build images for PRs updating Github actions only
-      "addLabels": "gha-builds/just-dont"
+      "addLabels": [
+      	"gha-builds/just-dont",
+      ],
     },
   ],
   "regexManagers": [
