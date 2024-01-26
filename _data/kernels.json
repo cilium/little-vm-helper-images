@@ -35,8 +35,9 @@
                  [ "--disable", "CONFIG_SECURITY_APPARMOR"],
                  [ "--disable", "CONFIG_NF_CONNTRACK"],
                  [ "--disable", "CONFIG_MODULE_SIG"],
-                 [ "--disable", "CONFIG_MODULE_SIG_ALL"]
-             ]
+                 [ "--disable", "CONFIG_MODULE_SIG_ALL"],
+                 [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ]
+            ]
         }
     ],
     "common_opts": [
@@ -231,6 +232,7 @@
         [ "--enable", "CONFIG_IP_ADVANCED_ROUTER"],
         [ "--enable", "IP_MULTIPLE_TABLES"],
         [ "--enable", "IPV6_MULTIPLE_TABLES"],
+        [ "--enable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
 
         [ "--enable", "CONFIG_INET_DIAG"],
         [ "--enable", "CONFIG_INET_UDP_DIAG"],
