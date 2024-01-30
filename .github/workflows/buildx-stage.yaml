@@ -68,6 +68,7 @@ jobs:
         if: ${{ steps.check.outputs.build == 'y' && inputs.apply-patch != '' }}
         run: |
           if [ $(wc -l < /tmp/${{ inputs.apply-patch }} ) -gt 0 ]; then
+            cat /tmp/${{ inputs.apply-patch }}
             git am /tmp/${{ inputs.apply-patch }}
             git log --oneline -n 2
           fi
@@ -82,6 +83,7 @@ jobs:
         if: ${{ steps.check.outputs.build == 'y' && inputs.apply-patch-2 != '' }}
         run: |
           if [ $(wc -l < /tmp/${{ inputs.apply-patch-2 }} ) -gt 0 ]; then
+            cat /tmp/${{ inputs.apply-patch-2 }}
             git am /tmp/${{ inputs.apply-patch-2 }}
             git log --oneline -n 2
           fi
