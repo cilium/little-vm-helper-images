@@ -2,6 +2,8 @@
 # Update to latest version: 2024-01-30
 FROM quay.io/lvh-images/lvh:latest AS lvh
 
+# rebuild: 20240130.185336
+
 FROM ubuntu:rolling
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh

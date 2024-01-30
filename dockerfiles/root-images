@@ -6,6 +6,7 @@ ARG ROOT_BUILDER_TAG=20240130.111018
 
 FROM quay.io/lvh-images/root-builder-ci:"${ROOT_BUILDER_TAG}" AS builder
 COPY _data /data
+RUN lvh version
 # mmdebstrap outputs messages in stderr, so we redirect stderr
 RUN lvh images build --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/*.qcow2

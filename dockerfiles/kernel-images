@@ -6,6 +6,7 @@ FROM quay.io/lvh-images/kernel-builder-ci:"${KERNEL_BUILDER_TAG}" AS builder
 ARG KERNEL_VER=bpf-next
 COPY _data /data
 WORKDIR /data
+RUN lvh version
 # NB: logrus sends everything to stderr it seems, so redirect it to stdout
 RUN lvh kernels --dir . fetch     2>&1 ${KERNEL_VER}
 RUN lvh kernels --dir . configure 2>&1 ${KERNEL_VER}
