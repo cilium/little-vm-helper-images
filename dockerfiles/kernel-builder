@@ -1,6 +1,8 @@
 # vim: set ft=dockerfile:
 FROM quay.io/lvh-images/lvh:latest AS lvh
 
+# 20240130.185425
+
 FROM ubuntu:rolling
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
