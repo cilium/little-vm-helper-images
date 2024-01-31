@@ -303,6 +303,7 @@ jobs:
           echo "| --- | --- |" >> /tmp/image-log
           sudo mkdir /_images; sudo chmod 777 /_images
           for f in $(find . -type f ); do
+            df -h /
             v=$(basename $f)
             tag=$(cat $f)
             image="quay.io/lvh-images/kind-ci:$v-$tag"
@@ -317,6 +318,7 @@ jobs:
             linux_ver=$(cat /tmp/expect.log | sed -ne 's/^.*Linux version \([^ ]\+\).*$/\1/p')
             echo "| ${image} | ${linux_ver} |" | tee -a /tmp/image-log
             rm /_images/*
+            docker image prune -a -f
           done
           echo 'IMAGE_LOG<<EOF' >> $GITHUB_ENV
           cat /tmp/image-log >> $GITHUB_ENV
