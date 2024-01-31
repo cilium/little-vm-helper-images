@@ -232,6 +232,8 @@
         [ "--enable", "CONFIG_IP_ADVANCED_ROUTER"],
         [ "--enable", "IP_MULTIPLE_TABLES"],
         [ "--enable", "IPV6_MULTIPLE_TABLES"],
+        [ "--enable", "CONFIG_NET_L3_MASTER_DEV"],
+        [ "--module", "CONFIG_NET_VRF"],
         [ "--enable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
 
         [ "--enable", "CONFIG_INET_DIAG"],
