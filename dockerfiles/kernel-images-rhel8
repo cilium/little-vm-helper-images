@@ -3,7 +3,7 @@
 
 FROM quay.io/lvh-images/lvh:latest AS lvh
 
-FROM rockylinux:8 AS builder
+FROM rockylinux:8.6 AS builder
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 
