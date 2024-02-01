@@ -39,8 +39,7 @@ RUN lvh kernels --dir /data raw_configure . rhel8 2>&1
 
 FROM prepare AS build
 
-RUN make -j $(nproc)
-RUN make tar-pkg
+RUN make -j $(nproc) tar-pkg
 
 COPY scripts/generate-btf.sh /tmp/
 RUN /tmp/generate-btf.sh /tmp/build/tar-install
