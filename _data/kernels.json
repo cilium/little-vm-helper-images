@@ -33,7 +33,6 @@
             "opts": [
                  [ "--enable",  "CONFIG_EXT4_FS"],
                  [ "--disable", "CONFIG_SECURITY_APPARMOR"],
-                 [ "--disable", "CONFIG_NF_CONNTRACK"],
                  [ "--disable", "CONFIG_MODULE_SIG"],
                  [ "--disable", "CONFIG_MODULE_SIG_ALL"],
                  [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ]
@@ -127,6 +126,8 @@
         [ "--enable", "CONFIG_IP_VS" ],
         [ "--enable", "CONFIG_NETFILTER_ADVANCED" ],
         [ "--enable", "CONFIG_NF_CONNTRACK" ],
+        [ "--enable", "CONFIG_NF_FLOW_TABLE" ],
+        [ "--enable", "CONFIG_NF_TABLES" ],
         [ "--enable", "CONFIG_VETH" ],
         [ "--module", "CONFIG_BRIDGE_NETFILTER" ],
         [ "--module", "CONFIG_IP_NF_FILTER" ],
@@ -167,6 +168,7 @@
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_CT" ],
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_TPROXY" ],
         [ "--module", "CONFIG_VXLAN" ],
+        [ "--module", "CONFIG_MACVLAN" ],
         [ "--module", "CONFIG_IP_NF_IPTABLES" ],
         [ "--module", "CONFIG_IP6_NF_IPTABLES" ],
 
