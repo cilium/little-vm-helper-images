@@ -3,7 +3,7 @@
 
 FROM quay.io/lvh-images/lvh:latest AS lvh
 
-FROM rockylinux:8.6 AS builder
+FROM rockylinux:8 AS builder
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 
@@ -13,8 +13,11 @@ RUN dnf builddep -y kernel
 
 FROM builder AS prepare
 
+ARG VERSION=4.18.0-372.32.1.el8_6
+
 WORKDIR /tmp
-RUN dnf download --source kernel && rpm -ivh kernel*.src.rpm
+RUN curl -LO "https://dl.rockylinux.org/vault/rocky/8.6/BaseOS/source/tree/Packages/k/kernel-${VERSION}.src.rpm"
+RUN rpm -ivh kernel*.src.rpm
 
 WORKDIR /root/rpmbuild/SPECS
 RUN rpmbuild -bp kernel.spec --with baseonly
