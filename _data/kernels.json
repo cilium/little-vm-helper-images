@@ -225,6 +225,7 @@
         [ "--enable", "CONFIG_IP_VS_PROTO_UDP" ],
         [ "--enable", "CONFIG_IP_VS_RR" ],
         [ "--enable", "CONFIG_SECURITY_APPARMOR" ],
+        [ "--enable", "CONFIG_SECURITY_PATH" ],
         [ "--enable", "CONFIG_PARAVIRT" ],
         [ "--enable", "CONFIG_HYPERVISOR_GUEST" ],
         [ "--enable", "CONFIG_KVM_GUEST" ],
