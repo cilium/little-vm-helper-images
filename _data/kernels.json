@@ -10,7 +10,11 @@
         },
         {
             "name": "6.1",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.1.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.1.y",
+            "opts": [
+                [ "--disable", "CONFIG_DYNAMIC_FTRACE_WITH_ARGS" ],
+                [ "--disable", "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS" ]
+            ]
         },
         {
             "name": "5.15",
