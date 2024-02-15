@@ -9,7 +9,6 @@ COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 
 RUN dnf install -y 'dnf-command(builddep)' 'dnf-command(config-manager)'
 RUN dnf config-manager --set-enabled powertools
-RUN dnf builddep -y kernel
 
 FROM builder AS prepare
 
@@ -20,6 +19,7 @@ RUN curl -LO "https://dl.rockylinux.org/vault/rocky/8.6/BaseOS/source/tree/Packa
 RUN rpm -ivh kernel*.src.rpm
 
 WORKDIR /root/rpmbuild/SPECS
+RUN dnf builddep -y --define '_with_baseonly 1' kernel.spec
 RUN rpmbuild -bp kernel.spec --with baseonly
 
 RUN ln -s /root/rpmbuild/BUILD/kernel-*/linux-* /tmp/build
@@ -31,7 +31,7 @@ RUN for p in patches/*.patch; do echo "Applying $p"; patch -p1 < "$p" || exit 1;
 
 # Emulate InitBuildVars() from kernel.spec
 RUN make -s mrproper
-RUN cp configs/kernel-*-$(uname -m)-debug.config .config
+RUN cp configs/kernel-*-$(uname -m).config .config
 
 # Remove all RHEL modules
 RUN sed --in-place -E -e 's/^(CONFIG_[^=]+)=m/# \1 is not set/' .config
