@@ -10,7 +10,7 @@
         },
         {
             "name": "6.1",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.1.y"
+            "url": "https://github.com/brb/linux-stable.git?depth=1#linux-6.1.y"
         },
         {
             "name": "5.15",
