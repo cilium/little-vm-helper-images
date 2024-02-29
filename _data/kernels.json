@@ -14,7 +14,7 @@
         },
         {
             "name": "5.15",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.15.y"
+            "url": "https://github.com/brb/linux-stable.git?depth=1#linux-5.15.y"
         },
         {
             "name": "5.10",
