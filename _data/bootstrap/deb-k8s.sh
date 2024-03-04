@@ -3,11 +3,10 @@ set -euxo pipefail
 
 . /etc/profile
 
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
-deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update --quiet && apt-get install --quiet --yes --no-install-recommends \
     kubectl
