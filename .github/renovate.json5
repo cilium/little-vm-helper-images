@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     ":gitSignOff",
     "helpers:pinGitHubActionDigests"
   ],
@@ -35,7 +35,7 @@
     {
       "groupName": "all github action dependencies",
       "groupSlug": "all-github-action",
-      "matchPaths": [
+      "matchFileNames": [
         ".github/workflows/**"
       ],
       "matchUpdateTypes": [
@@ -52,8 +52,9 @@
       ],
     },
   ],
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": [
         "^_data/bootstrap/bpf-tools\\.sh$",
         "^_data/bootstrap/golang\\.sh$",
