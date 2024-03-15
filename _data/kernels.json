@@ -84,7 +84,6 @@
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_REGS" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_ARGS" ],
-        [ "--enable", "CONFIG_HAVE_BPF_JIT" ],
         [ "--enable", "CONFIG_HAVE_EBPF_JIT" ],
         [ "--enable", "CONFIG_IPC_NS" ],
         [ "--enable", "CONFIG_LOCALVERSION_AUTO" ],
