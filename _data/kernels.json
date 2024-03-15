@@ -248,7 +248,6 @@
         [ "--enable", "CONFIG_INTEGRITY"],
         [ "--enable", "CONFIG_IMA"],
         [ "--enable", "CONFIG_IMA_MEASURE_PCR_IDX"],
-        [ "--enable", "CONFIG_IMA_AUDIT"],
         [ "--enable", "CONFIG_IMA_LSM_RULES"],
         [ "--enable", "CONFIG_INTEGRITY_SIGNATURE"],
         [ "--enable", "CONFIG_IMA_APPRAISE"]
