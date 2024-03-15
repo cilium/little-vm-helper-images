@@ -250,6 +250,12 @@
         [ "--enable", "CONFIG_IMA_MEASURE_PCR_IDX"],
         [ "--enable", "CONFIG_IMA_LSM_RULES"],
         [ "--enable", "CONFIG_INTEGRITY_SIGNATURE"],
-        [ "--enable", "CONFIG_IMA_APPRAISE"]
+        [ "--enable", "CONFIG_IMA_APPRAISE"],
+
+        [ "--disable", "CONFIG_DEBUG_INFO_REDUCED"],
+        [ "--enable", "CONFIG_KPROBES"],
+        [ "--enable", "CONFIG_KPROBE_EVENTS"],
+        [ "--enable", "CONFIG_UPROBE_EVENTS"],
+        [ "--enable", "CONFIG_FTRACE" ]
     ]
 }
