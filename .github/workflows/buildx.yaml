@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf-next', 'rhel8' ]
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf-next' ]
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
