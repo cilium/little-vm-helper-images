@@ -15,6 +15,15 @@ KERNEL_VERSIONS           ?= 4.19 5.4 5.10 5.15 6.1 6.6 bpf-next
 DOCKER ?= docker
 export DOCKER_BUILDKIT = 1
 
+UNAME_M := $(shell uname -m)
+ifeq ($(UNAME_M),x86_64)
+	TARGET_ARCH ?= amd64
+else ifeq ($(UNAME_M),aarch64)
+	TARGET_ARCH ?= arm64
+else
+	TARGET_ARCH ?= amd64
+endif
+
 .PHONY: all
 all:
 	@echo "Available targets:"
@@ -45,6 +54,7 @@ kernel-images: kernel-builder
 		$(DOCKER) build --no-cache \
 			--build-arg KERNEL_BUILDER_TAG=$(KERNEL_BUILDER_TAG) \
 			--build-arg KERNEL_VER=$$v \
+			--platform=linux/${TARGET_ARCH} \
 			-f dockerfiles/kernel-images -t $(KERNEL_IMAGES):$$v . ; \
 	done
 
