@@ -134,6 +134,7 @@ jobs:
      patch-cmd: |
          mkdir -p versions/kernel-images
          echo ${{ needs.conf.outputs.tag}} > versions/kernel-images/${{ matrix.kernel.ver }}
+     platforms: 'linux/amd64,linux/arm64'
 
   root-builder:
     needs: [conf]
