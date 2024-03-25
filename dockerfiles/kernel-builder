@@ -9,5 +9,10 @@ COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 RUN  apt-get update -yq &&  \
      apt-get upgrade -yq &&  \
      apt-get install -yq  build-essential git fakeroot xz-utils libssl-dev bc flex libelf-dev bison python3 kmod cmake libelf-dev libdwarf-dev libdw-dev
+
+ARG BUILDARCH
+RUN if [ "$BUILDARCH" = "amd64" ]; then apt-get install -yq gcc-aarch64-linux-gnu; fi
+RUN if [ "$BUILDARCH" = "arm64" ]; then apt-get install -yq gcc-x86-64-linux-gnu; fi
+
 RUN git clone --depth=1 --shallow-submodules --recurse-submodules --single-branch https://git.kernel.org/pub/scm/devel/pahole/pahole.git /tmp/pahole
 RUN cd /tmp/pahole && mkdir -p build && cd build && cmake -D__LIB=lib .. && make && make install && ldconfig /usr/local
