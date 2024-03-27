@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 # vim: set ft=dockerfile:
 
-FROM quay.io/lvh-images/lvh:latest AS lvh
+FROM quay.io/lvh-images/lvh:v0.0.17 AS lvh
 
 FROM rockylinux:8 AS builder
 
