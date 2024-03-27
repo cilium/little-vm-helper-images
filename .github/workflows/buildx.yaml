@@ -82,10 +82,12 @@ jobs:
               for (const k of kernels) {
                   if (k == "rhel8") {
                     dockerfile = "dockerfiles/kernel-images-rhel8"
+                    platforms = 'linux/amd64'
                   } else {
                     dockerfile = "dockerfiles/kernel-images"
+                    platforms = 'linux/amd64,linux/arm64'
                   }
-                  ret.push({"ver": k, "dockerfile": dockerfile})
+                  ret.push({"ver": k, "dockerfile": dockerfile, "platforms": platforms})
               }
               return ret
       - name: configure
@@ -134,7 +136,7 @@ jobs:
      patch-cmd: |
          mkdir -p versions/kernel-images
          echo ${{ needs.conf.outputs.tag}} > versions/kernel-images/${{ matrix.kernel.ver }}
-     platforms: 'linux/amd64,linux/arm64'
+     platforms: ${{ matrix.kernel.platforms }}
 
   root-builder:
     needs: [conf]
