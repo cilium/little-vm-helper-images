@@ -8,7 +8,12 @@ FROM quay.io/lvh-images/root-builder-ci:"${ROOT_BUILDER_TAG}" AS builder
 COPY _data /data
 RUN lvh version
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --dir /data 2>&1
+#
+# You cannot use KVM during docker build anyway (without insecure option), it
+# will fallback to emulation. However on arm64, libguestfs gives --machine
+# gic-version=host to qemu which will fail the fallback so we need to
+# explicitely tell libguestfs to use tcg
+RUN LIBGUESTFS_BACKEND_SETTINGS=force_tcg lvh images build --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/*.qcow2
 
 # Can't use scratch here because we use `docker create` elsewhere, and
