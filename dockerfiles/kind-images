@@ -20,6 +20,12 @@ RUN apt-get update --quiet && \
      apt-get install --quiet --yes --no-install-recommends \
           zstd qemu-utils libguestfs-tools linux-image-generic
 
+# this might be counter intuitive but without this package (or one of its
+# subpackage), starting qemu with '-device virtio-net-pci,netdev=usernet' will
+# fail with 'failed to find romfile "efi-virtio.rom"'
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ]; then apt-get install -yq --no-install-recommends qemu-system-x86; fi
+
 COPY --from=kimg /data/kernels /data/kernels
 COPY --from=root-images /data/images/kind.qcow2.zst /data/images/kind.qcow2.zst
 RUN zstd --decompress --rm --threads=0 /data/images/kind.qcow2.zst

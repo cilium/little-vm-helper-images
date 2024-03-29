@@ -17,5 +17,11 @@ RUN apt-get update --quiet && \
           linux-image-generic \
           zstd
 
+ARG TARGETARCH
+# this might be counter intuitive but without this package (or one of its
+# subpackage), starting qemu with '-device virtio-net-pci,netdev=usernet' will
+# fail with 'failed to find romfile "efi-virtio.rom"'
+RUN if [ "$TARGETARCH" = "arm64" ]; then apt-get install -yq --no-install-recommends qemu-system-x86; fi
+
 RUN apt-get install debian-archive-keyring && \
     cp /usr/share/keyrings/debian-archive-keyring.gpg /etc/apt/trusted.gpg.d/
