@@ -75,9 +75,17 @@
             "gpg",
             "libarchive-tools",
             "ethtool",
-            "systemd-resolved"
+            "systemd-resolved",
+            "ntpdate"
         ],
         "actions": [
+            {
+                "comment": "update date (needed for libguestfs on arm64 running in Docker)",
+                "op": {
+                    "Cmd": "ntpdate pool.ntp.org"
+                },
+                "type": "run-command"
+            },
             {
                 "comment": "disable password for root",
                 "op": {
