@@ -2,7 +2,7 @@
 
 # force-rebuild: 1
 
-ARG ROOT_BUILDER_TAG=20240201.145448
+ARG ROOT_BUILDER_TAG=invalid
 
 FROM quay.io/lvh-images/root-builder-ci:"${ROOT_BUILDER_TAG}" AS builder
 COPY _data /data
