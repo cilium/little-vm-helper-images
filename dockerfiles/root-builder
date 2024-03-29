@@ -1,6 +1,6 @@
 # vim: set ft=dockerfile:
 # Update to latest version: 2024-01-30
-FROM quay.io/lvh-images/lvh:latest AS lvh
+FROM quay.io/lvh-images/lvh:v0.0.17 AS lvh
 
 # rebuild: 20240130.185336
 
