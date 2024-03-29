@@ -151,7 +151,6 @@ jobs:
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      patch-cmd: |
-        perl -pi -e 's/^ARG ROOT_BUILDER_TAG.*$/ARG ROOT_BUILDER_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
         echo ${{ needs.conf.outputs.tag }} > versions/root-builder
 
   root-images:
@@ -164,11 +163,12 @@ jobs:
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
      build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}
+     build-args: |
+          "ROOT_BUILDER_TAG=$(cat versions/root-builder)"
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: root-builder.patch
      patch-cmd: |
-        perl -pi -e 's/^ARG ROOT_IMAGES_TAG.*$/ARG ROOT_IMAGES_TAG=${{ needs.conf.outputs.tag }}/' dockerfiles/*
         echo ${{ needs.conf.outputs.tag }} > versions/root-images
 
   kind-images:
@@ -186,6 +186,7 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images)"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
@@ -210,6 +211,7 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images)"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}

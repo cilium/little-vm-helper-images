@@ -92,6 +92,15 @@ jobs:
             git log --oneline -n 2
           fi
 
+      - name: evaluate build args
+        id: buildargs
+        run: |
+          {
+            echo 'value<<EOF'
+            echo -n "${{ inputs.build-args }}"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
       - name: setup buildx
         if: ${{ steps.check.outputs.build == 'y' && !inputs.dry-run }}
         uses: docker/setup-buildx-action@2b51285047da1547ffb1b2203d8be4c0af6b1f20 # v3.2.0
@@ -111,7 +120,7 @@ jobs:
           no-cache: true
           file: ${{ inputs.build-file }}
           tags: ${{ inputs.build-tag }}
-          build-args: ${{ inputs.build-args }}
+          build-args: ${{ steps.buildargs.outputs.value }}
           platforms: ${{ inputs.platforms }}
       - name: run commands and generate patches
         if: ${{ steps.check.outputs.build == 'y' && inputs.patch-cmd != '' }}
