@@ -12,10 +12,10 @@ RUN dnf config-manager --set-enabled powertools
 
 FROM builder AS prepare
 
-ARG VERSION=4.18.0-372.32.1.el8_6
+ARG VERSION=4.18.0-513.11.1.el8_9
 
 WORKDIR /tmp
-RUN curl -LO "https://dl.rockylinux.org/vault/rocky/8.6/BaseOS/source/tree/Packages/k/kernel-${VERSION}.src.rpm"
+RUN curl -LO "https://dl.rockylinux.org/pub/rocky/8.9/BaseOS/source/tree/Packages/k/kernel-${VERSION}.src.rpm"
 RUN rpm -ivh kernel*.src.rpm
 
 WORKDIR /root/rpmbuild/SPECS
