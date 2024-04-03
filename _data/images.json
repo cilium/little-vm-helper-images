@@ -189,7 +189,7 @@
             "sudo",
             "util-linux",
             "vim",
-            "libelf1",
+            "libelf-dev",
             "libmnl0",
             "binutils",
             "make",
