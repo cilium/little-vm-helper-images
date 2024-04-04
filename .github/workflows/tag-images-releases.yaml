@@ -21,6 +21,12 @@ jobs:
           echo tag=${GITHUB_REF##*/} | tee -a $GITHUB_OUTPUT
       - name: setup docker buildx
         uses: docker/setup-buildx-action@2b51285047da1547ffb1b2203d8be4c0af6b1f20 # v3.2.0
+      - name: install crane
+        env:
+          VERSION: v0.19.1
+        run: |
+          URL="https://github.com/google/go-containerregistry/releases/download/${VERSION}/go-containerregistry_Linux_x86_64.tar.gz"
+          curl -fSL $URL | sudo tar -xz -C /usr/local/bin crane
       - name: quay login
         uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 # v3.1.0
         with:
@@ -39,16 +45,11 @@ jobs:
               dst_image=$(echo $src_image | sed -e "s/$tag/$name/")
               dst_image=$(echo $dst_image | sed -e 's/-ci:/:/')
               echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
-              docker pull $src_image
-              docker tag $src_image $dst_image
-              docker push $dst_image
+              crane copy $src_image $dst_image
               # Only tag the "prod" image on pushes to main
               if [[ "$name" == "main" ]]; then
                   dst_prod_image=$(echo $src_image | sed -e 's/-ci:/:/')
                   echo -e "\033[0;32m${src_image} -> ${dst_prod_image}\e[0m";
-                  docker tag $src_image $dst_prod_image
-                  docker push $dst_prod_image
-                  docker image rmi $dst_prod_image
+                  crane copy $src_image $dst_prod_image
               fi
-              docker image rmi $src_image $dst_image
           done
