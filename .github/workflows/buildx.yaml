@@ -198,6 +198,7 @@ jobs:
     secrets: inherit
     with:
      name: kind-image-${{ matrix.kernel.ver }}-${{ matrix.runner.arch }}
+     runner: ${{ matrix.runner.name }}
      build-file: dockerfiles/kind-images
      build-tag: quay.io/lvh-images/kind-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
      build-args: |
@@ -213,6 +214,7 @@ jobs:
          mkdir -p versions/kind/${{ matrix.runner.arch }}
          echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/kind/${{ matrix.runner.arch }}/${{ matrix.kernel.ver }}
 
+  # complexity-test-images is hardcoded amd64 only for now
   complexity-test-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
     needs: [conf, kernel-images, root-images]
@@ -222,21 +224,21 @@ jobs:
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: complexity-test-${{ matrix.kernel.ver }}
+     name: complexity-test-${{ matrix.kernel.ver }}-amd64
      build-file: dockerfiles/complexity-test-images
      build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=$(cat versions/root-images)"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/amd64)"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
-     apply-patch: root-images.patch
+     apply-patch: root-images-amd64.patch
      apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
          mkdir -p versions/complexity-test
-         echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel.ver }}
+         echo ${{ needs.conf.outputs.tag}}-amd64 > versions/complexity-test/${{ matrix.kernel.ver }}-amd64
 
   commit-changes:
     if: ${{ needs.conf.outputs.run == 'y' }}
