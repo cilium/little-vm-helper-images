@@ -32,10 +32,13 @@ on:
       platforms:
         type: string
         required: false
-        default: 'linux/amd64'
+      runner:
+        type: string
+        required: false
+        default: 'ubuntu-latest-4cores-16gb'
 jobs:
   build:
-    runs-on: ubuntu-latest-4cores-16gb
+    runs-on: ${{ inputs.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
