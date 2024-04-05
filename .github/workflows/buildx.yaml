@@ -291,20 +291,35 @@ jobs:
   print_image_kernels:
     needs: [conf, commit-changes]
     if: ${{ needs.conf.outputs.run == 'y' && needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner:
+          - "ubuntu-latest"
+          - "actuated-arm64-2cpu-8gb"
+    runs-on: ${{ matrix.runner }}
     steps:
+      - name: install crane
+        env:
+          VERSION: v0.19.1
+        run: |
+          ARCH=$([ "$(uname -m)" == "aarch64" ] && echo "arm64" || echo $(uname -m))
+          URL="https://github.com/google/go-containerregistry/releases/download/$VERSION/go-containerregistry_Linux_$ARCH.tar.gz"
+          curl -fSL $URL | sudo tar -xz -C /usr/local/bin crane
+          crane version
+
       - name: Install LVH cli
+        working-directory: /tmp
         shell: bash
         run: |
-          cid=$(docker create quay.io/lvh-images/lvh:latest)
-          docker cp $cid:/usr/bin/lvh /tmp/lvh
-          docker rm $cid
-          chmod +x /tmp/lvh
-          sudo mv /tmp/lvh /bin/lvh
+          crane export quay.io/lvh-images/lvh:latest --platform linux/$(dpkg --print-architecture) lvh.tar
+          tar --transform='s#usr/bin/##g' -xf lvh.tar usr/bin/lvh
+          rm lvh.tar
+          chmod +x lvh && sudo mv lvh /usr/local/bin
+          lvh version
 
       - name: Install dependencies
         run: |
-           deps="expect cpu-checker qemu-system-x86"
+           deps="expect cpu-checker qemu-system-x86 qemu-system-aarch64"
            n=0
            until [ "$n" -ge 5 ]; do
              success=1
@@ -328,24 +343,49 @@ jobs:
         run: |
           echo "| Image | kernel version |" > /tmp/image-log
           echo "| --- | --- |" >> /tmp/image-log
-          sudo mkdir /_images; sudo chmod 777 /_images
-          for f in $(find . -type f ); do
+          images_folder=/tmp/lvh-images
+          sudo mkdir $images_folder; sudo chmod 777 $images_folder
+          for f in $(find $(dpkg --print-architecture) -type f ); do
             df -h /
+
             v=$(basename $f)
-            tag=$(cat $f)
-            image="quay.io/lvh-images/kind-ci:$v-$tag"
-            echo docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
-            docker run -v /_images:/mnt/images $image cp /data/images/kind_$v.qcow2.zst /mnt/images
-            zstd -d /_images/kind_$v.qcow2.zst -o /_images/kind_$v.qcow2
-            expect -c "
-                      set timeout 60
-                      spawn lvh run  --image /_images/kind_$v.qcow2
-                      expect -re \"Linux version .*\n\" { exit }
-            " | tee /tmp/expect.log
+            image_tag=$(cat $f)
+            image="quay.io/lvh-images/kind-ci:$v-$image_tag"
+
+            # extract the qcow2 image
+            crane export $image --platform linux/$(dpkg --print-architecture) $images_folder/kind_$v.tar
+            tar --transform='s#data/images/##g' -xvf $images_folder/kind_$v.tar data/images/kind_$v.qcow2.zst
+            mv kind_$v.qcow2.zst $images_folder
+            rm $images_folder/kind_$v.tar
+            zstd -d $images_folder/kind_$v.qcow2.zst -o $images_folder/kind_$v.qcow2
+            rm $images_folder/kind_$v.qcow2.zst
+
+            if [ "$(uname -m)" = "aarch64" ]; then
+              # extract the compressed kernel
+              kernel_tag=$(cat ../kernel-images/$v)
+              kernel="quay.io/lvh-images/kernel-images-ci:$v-$kernel_tag"
+              crane export $kernel --platform linux/$(dpkg --print-architecture) $images_folder/kernel_$v.tar
+              tar --transform="s#data/kernels/$v/boot/##g" --wildcards -xvf $images_folder/kernel_$v.tar data/kernels/$v/boot/vmlinuz*
+              mv vmlinuz* $images_folder/vmlinuz
+              rm $images_folder/kernel_$v.tar
+            fi
+
+            if [ "$(uname -m)" = "aarch64" ]; then
+              expect -c "
+                        set timeout 60
+                        spawn lvh run --image $images_folder/kind_$v.qcow2 --kernel $images_folder/vmlinuz
+                        expect -re \"Linux version .*\n\" { exit }
+              " | tee /tmp/expect.log
+            else
+              expect -c "
+                        set timeout 60
+                        spawn lvh run --image $images_folder/kind_$v.qcow2
+                        expect -re \"Linux version .*\n\" { exit }
+              " | tee /tmp/expect.log
+            fi
             linux_ver=$(cat /tmp/expect.log | sed -ne 's/^.*Linux version \([^ ]\+\).*$/\1/p')
             echo "| ${image} | ${linux_ver} |" | tee -a /tmp/image-log
-            rm /_images/*
-            docker image prune -a -f
+            rm $images_folder/*
           done
           echo 'IMAGE_LOG<<EOF' >> $GITHUB_ENV
           cat /tmp/image-log >> $GITHUB_ENV
