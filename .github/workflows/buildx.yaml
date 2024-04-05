@@ -194,6 +194,9 @@ jobs:
         runner:
           - {name: "ubuntu-latest-4cores-16gb", arch: "amd64"}
           - {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
+        exclude:
+          - runner: {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
+            kernel: {ver: "rhel8"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
