@@ -40,10 +40,14 @@ jobs:
           for f in $(find ./versions -type f ! -name README.md -printf "%P\n")
           do
               tag=$(cat ./versions/$f)
-              image=$(echo $f/$tag | sed -e 's_/_-ci:_; s_/_-_g')
-              src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/_-ci:_; s_/_-_g')"
+              path_arch=$(echo $f | grep -oE 'arm64|amd64')
+              arch_suffix=$( [ -n "$path_arch" ] && echo "-$path_arch" )
+              echo f=$f tag=$tag arch_suffix=$arch_suffix
+
+              src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/arm64__;s_/amd64__' | sed -e 's_/_-ci:_; s_/_-_g')"
               dst_image=$(echo $src_image | sed -e "s/$tag/$name/")
               dst_image=$(echo $dst_image | sed -e 's/-ci:/:/')
+              dst_image=$(echo ${dst_image}${arch_suffix})
               echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
               crane copy $src_image $dst_image
               # Only tag the "prod" image on pushes to main
