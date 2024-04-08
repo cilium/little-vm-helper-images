@@ -241,7 +241,7 @@ jobs:
      apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
          mkdir -p versions/complexity-test
-         echo ${{ needs.conf.outputs.tag}}-amd64 > versions/complexity-test/${{ matrix.kernel.ver }}-amd64
+         echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel.ver }}
 
   commit-changes:
     if: ${{ needs.conf.outputs.run == 'y' }}
