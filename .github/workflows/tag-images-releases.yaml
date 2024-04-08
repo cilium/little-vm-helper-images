@@ -40,8 +40,8 @@ jobs:
           for f in $(find ./versions -type f ! -name README.md -printf "%P\n")
           do
               tag=$(cat ./versions/$f)
-              path_arch=$(echo $f | grep -oE 'arm64|amd64')
-              arch_suffix=$( [ -n "$path_arch" ] && echo "-$path_arch" )
+              path_arch=$(echo $f | grep -oE 'arm64|amd64' || true)
+              arch_suffix=$( [ -n "$path_arch" ] && echo "-$path_arch" || true)
               echo f=$f tag=$tag arch_suffix=$arch_suffix
 
               src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/arm64__;s_/amd64__' | sed -e 's_/_-ci:_; s_/_-_g')"
