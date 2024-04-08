@@ -57,3 +57,17 @@ jobs:
                   crane copy $src_image $dst_prod_image
               fi
           done
+      - name: create multi-arch kind images
+        run: |
+          # if it exists in arm64, it exists in amd64. The opposite is false for rhel8.
+          for f in $(find ./versions/kind/arm64 -type f -printf "%P\n")
+          do
+              tag=$(cat ./versions/kind/arm64/$f)
+              multi_tag=$(echo $tag | sed 's/-\(arm64\|amd64\)$//')
+              kind_image_name="quay.io/lvh-images/kind"
+              multi_image="$kind_image_name:$f-$multi_tag"
+              amd64_image="$multi_image-amd64"
+              arm64_image="$multi_image-arm64"
+              docker buildx imagetools create -t $multi_image $amd64_image $arm64_image
+          done
+
