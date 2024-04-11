@@ -86,3 +86,30 @@ results in images  for the `bpf-next` version be build.
 ### Can I completely disable builds for a PR?
 
 Yes, you can use the `gha-builds/justdont` label.
+
+### How does the arm64 builds works?
+
+The build of LVH and the kernel can be done using cross-compilation which
+simplifies a lot the build of multi-arch images. Unfortunately, the part that
+build the images relies libguestfs that cannot work as of now for different
+target architectures than the host architecture. However switching to use only
+mmdebstrap, which can easily cross-build images, and get rid of libguestfs
+would solve this duality.
+
+
+```mermaid
+flowchart TD
+    subgraph "cross compilation"
+    A[kernel builder] --> B[kernel images]
+    E[little vm helper]
+    end
+    subgraph "native build"
+    C[root builder] --> D[root images]
+    B & D & E --> F[kind]
+    end
+```
+
+As of now, each steps to build an image (the left on the diagram above), for
+example kind, are built on native runners and produce arch specific images
+(with the `-<arch>` suffix in the tag), a multi-arch tag is then produced,
+merging the architecture specific images, for the final result ease of use.
