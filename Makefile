@@ -1,11 +1,11 @@
 OCIORG                    ?= quay.io/lvh-images
 LVH                       ?= $(OCIORG)/lvh
-ROOT_BUILDER              ?= $(OCIORG)/root-builder
-ROOT_IMAGES               ?= $(OCIORG)/root-images
-KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder
-KERNEL_IMAGES             ?= $(OCIORG)/kernel-images
-KIND_IMAGES               ?= $(OCIORG)/kind
-COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/complexity-test
+ROOT_BUILDER              ?= $(OCIORG)/root-builder-ci
+ROOT_IMAGES               ?= $(OCIORG)/root-images-ci
+KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder-ci
+KERNEL_IMAGES             ?= $(OCIORG)/kernel-images-ci
+KIND_IMAGES               ?= $(OCIORG)/kind-ci
+COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/complexity-test-ci
 
 KERNEL_BUILDER_TAG        ?= main
 ROOT_BUILDER_TAG          ?= main
