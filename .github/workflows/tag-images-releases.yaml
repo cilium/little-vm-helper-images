@@ -68,7 +68,7 @@ jobs:
               multi_image="$kind_image_name:$f-$multi_tag"
               amd64_image="$multi_image-amd64"
               arm64_image="$multi_image-arm64"
-              docker buildx imagetools create -t $multi_image $amd64_image $arm64_image
+              docker buildx imagetools create -t $kind_image_name:$f-main -t $multi_image $amd64_image $arm64_image
           done
       - name: create multi-arch root-images images
         run: |
