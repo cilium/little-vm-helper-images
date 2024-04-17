@@ -270,6 +270,13 @@
                     "Cmd": "/bootstrap/bpf-tools.sh"
                 },
                 "type": "run-command"
+            },
+            {
+                "comment": "install docker",
+                "op": {
+                    "Cmd": "/bootstrap/deb-docker.sh"
+                },
+                "type": "run-command"
             }
         ]
     }
