@@ -19,8 +19,9 @@ jobs:
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
           echo "bpf-next $id" > misc/dummy
+          echo "bpf $id" >> misc/dummy
           git add misc/dummy
-          git commit -a -m "bpf-next: $id"
+          git commit -a -m "bpf/bpf-next: $id"
           git show HEAD
           git push --set-upstream origin pr/bpf-next-${id}
           echo "id=$id" | tee -a $GITHUB_OUTPUT
@@ -31,5 +32,6 @@ jobs:
           id=${{ steps.commit.outputs.id }}
           gh pr create \
             -l "gha-builds/kernel/bpf-next" \
-            --title "bpf-next update: $id" \
-            --body "PR to update bpf-next" \
+            -l "gha-builds/kernel/bpf" \
+            --title "bpf/bpf-next update: $id" \
+            --body "PR to update bpf/bpf-next" \
