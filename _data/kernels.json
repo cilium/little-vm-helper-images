@@ -304,6 +304,8 @@
         [ "--disable", "CONFIG_ARCH_VEXPRESS"],
         [ "--disable", "CONFIG_ARCH_VISCONTI"],
         [ "--disable", "CONFIG_ARCH_XGENE"],
-        [ "--disable", "CONFIG_ARCH_ZYNQMP"]
+        [ "--disable", "CONFIG_ARCH_ZYNQMP"],
+
+        [ "--enable", "CONFIG_X86_X32_ABI" ]
     ]
 }
