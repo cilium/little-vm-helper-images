@@ -306,6 +306,6 @@
         [ "--disable", "CONFIG_ARCH_XGENE"],
         [ "--disable", "CONFIG_ARCH_ZYNQMP"],
 
-        [ "--enable", "CONFIG_X86_X32_ABI" ]
+        [ "--enable", "CONFIG_X86_X32" ]
     ]
 }
