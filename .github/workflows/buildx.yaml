@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf', 'bpf-next', 'rhel8' ]
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', 'bpf', 'bpf-next', 'rhel8', 'rhel9' ]
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
@@ -82,6 +82,9 @@ jobs:
               for (const k of kernels) {
                   if (k == "rhel8") {
                     dockerfile = "dockerfiles/kernel-images-rhel8"
+                    platforms = 'linux/amd64'
+                  } else if (k == "rhel9") {
+                    dockerfile = "dockerfiles/kernel-images-rhel9"
                     platforms = 'linux/amd64'
                   } else {
                     dockerfile = "dockerfiles/kernel-images"
@@ -197,6 +200,8 @@ jobs:
         exclude:
           - runner: {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
             kernel: {ver: "rhel8"}
+          - runner: {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
+            kernel: {ver: "rhel9"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
