@@ -19,8 +19,10 @@ RUN curl -LO "https://dl.rockylinux.org/vault/rocky/9.4/BaseOS/source/tree/Packa
 RUN rpm -ivh kernel*.src.rpm
 
 WORKDIR /root/rpmbuild/SPECS
+#RUN dnf builddep -y --define '_with_baseonly 1' kernel.spec
 RUN dnf builddep -y --define '_with_baseonly 1' kernel.spec
-RUN rpmbuild -bp kernel.spec --with baseonly
+#RUN rpmbuild -bp kernel.spec --with baseonly
+RUN rpmbuild -bp kernel.spec
 
 RUN ln -s /root/rpmbuild/BUILD/kernel-*/linux-* /tmp/build
 WORKDIR /tmp/build
