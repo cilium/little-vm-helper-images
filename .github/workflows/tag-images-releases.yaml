@@ -59,7 +59,7 @@ jobs:
           done
       - name: create multi-arch kind images
         run: |
-          # if it exists in arm64, it exists in amd64. The opposite is false for rhel8.
+          # if it exists in arm64, it exists in amd64. The opposite is false for rhel{8,9}.
           for f in $(find ./versions/kind/arm64 -type f -printf "%P\n")
           do
               tag=$(cat ./versions/kind/arm64/$f)
