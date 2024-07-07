@@ -18,3 +18,14 @@ apt-get update --quiet && apt-get install --quiet --yes --no-install-recommends 
 # for iptables 1.8.8
 update-alternatives --set iptables /usr/sbin/iptables-legacy
 update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+
+mkdir -p /etc/systemd/system/docker.service.d
+
+cat <<EOF >> /etc/systemd/system/docker.service.d/socket.conf
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
+EOF
+
+systemctl daemon-reload
+systemctl restart docker
