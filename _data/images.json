@@ -12,6 +12,7 @@
             "util-linux",
             "vim",
             "binutils",
+            "netcat-openbsd",
             "systemd-resolved"
         ],
         "actions": [
