@@ -1,6 +1,6 @@
 # vim: set ft=dockerfile:
 
-# force-rebuild: 1
+# rebuild: 20240726.114310
 
 ARG ROOT_BUILDER_TAG=invalid
 
