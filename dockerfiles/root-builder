@@ -1,9 +1,7 @@
 # vim: set ft=dockerfile:
-# Update to latest version: 2024-01-30
-# Note: can be updated to a tag after a version >v0.0.17 is released
-FROM quay.io/lvh-images/lvh@sha256:9effc5161cfb265641f0be36cd9c2e8b9c477fa04ac67c01c1fadfae05269417 AS lvh
+FROM quay.io/lvh-images/lvh:v0.0.19 AS lvh
 
-# rebuild: 20240130.185336
+# rebuild: 20240730.162354
 
 FROM ubuntu:rolling
 
