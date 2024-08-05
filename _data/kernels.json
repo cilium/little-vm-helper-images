@@ -47,6 +47,16 @@
                  [ "--disable", "CONFIG_MODULE_SIG_ALL"],
                  [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ]
             ]
+        },
+        {
+            "name": "rhel9",
+            "opts": [
+                 [ "--enable",  "CONFIG_EXT4_FS"],
+                 [ "--disable", "CONFIG_SECURITY_APPARMOR"],
+                 [ "--disable", "CONFIG_MODULE_SIG"],
+                 [ "--disable", "CONFIG_MODULE_SIG_ALL"],
+                 [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ]
+            ]
         }
     ],
     "common_opts": [
