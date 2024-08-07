@@ -85,6 +85,15 @@ jobs:
               main_tag=$f-main
               echo -e "tagging image \033[0;32m$main_src_img\e[0m with tag \033[0;32m$main_tag\e[0m"
               crane tag $main_src_img $main_tag
+              # for backward compatibility, we tag rhel8.6 as rhel8
+              if [[ "$f" == "rhel8.6" ]]; then
+                  compatibility_final_tag=rhel8-$(echo $tag | sed 's/-\(amd64\)$//')
+                  compatibility_main_tag=rhel8-main
+                  echo -e "tagging image \033[0;32m$src_img\e[0m with tag \033[0;32m$compatibility_final_tag\e[0m"
+                  crane tag $src_img $compatibility_final_tag
+                  echo -e "tagging image \033[0;32m$main_src_img\e[0m with tag \033[0;32m$compatibility_main_tag\e[0m"
+                  crane tag $main_src_img $compatibility_main_tag
+              fi
           done
       - name: create multi-arch root-images images
         run: |
