@@ -4,9 +4,17 @@
 
 ARG ROOT_BUILDER_TAG=invalid
 
+FROM gcc:14 AS systemd-workaround-builder
+COPY systemd-workaround /src
+RUN make -C /src
+
 FROM quay.io/lvh-images/root-builder-ci:"${ROOT_BUILDER_TAG}" AS builder
 COPY _data /data
+COPY --from=systemd-workaround-builder /src/systemd-pidfd-fix.so /data/bootstrap/systemd-pidfd-fix.so
+
 RUN lvh version
+
+
 # mmdebstrap outputs messages in stderr, so we redirect stderr
 #
 # You cannot use KVM during docker build anyway (without insecure option), it

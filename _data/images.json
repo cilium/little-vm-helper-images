@@ -50,6 +50,22 @@
                     "Line": "fs.inotify.max_user_instances = 512"
                 },
                 "type": "append-line"
+            },
+            {
+                "comment": "systemd workaround: copy .so",
+                "op": {
+                    "LocalPath": "bootstrap/systemd-pidfd-fix.so",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "set preload",
+                "op": {
+                    "File": "/etc/ld.so.preload",
+                    "Line": "/systemd-pidfd-fix.so"
+                },
+                "type": "append-line"
             }
         ]
     },
@@ -186,6 +202,22 @@
                     "Cmd": "/bootstrap/deb-k8s.sh"
                 },
                 "type": "run-command"
+            },
+            {
+                "comment": "systemd workaround: copy .so",
+                "op": {
+                    "LocalPath": "bootstrap/systemd-pidfd-fix.so",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "set preload",
+                "op": {
+                    "File": "/etc/ld.so.preload",
+                    "Line": "/systemd-pidfd-fix.so"
+                },
+                "type": "append-line"
             }
         ]
     },
@@ -278,6 +310,22 @@
                     "Cmd": "/bootstrap/deb-docker.sh"
                 },
                 "type": "run-command"
+            },
+            {
+                "comment": "systemd workaround: copy .so",
+                "op": {
+                    "LocalPath": "bootstrap/systemd-pidfd-fix.so",
+                    "RemoteDir": "/"
+                },
+                "type": "copy-in"
+            },
+            {
+                "comment": "set preload",
+                "op": {
+                    "File": "/etc/ld.so.preload",
+                    "Line": "/systemd-pidfd-fix.so"
+                },
+                "type": "append-line"
             }
         ]
     }
