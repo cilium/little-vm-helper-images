@@ -141,7 +141,7 @@
             {
                 "comment": "env",
                 "op": {
-                    "File": "/data/env.sh",
+                    "File": "env.sh",
                     "Dest": "/etc/profile.d/path.sh"
                 },
                 "type": "upload"
@@ -149,7 +149,7 @@
             {
                 "comment": "copy-in bootstrap dir",
                 "op": {
-                    "LocalPath": "/data/bootstrap",
+                    "LocalPath": "bootstrap",
                     "RemoteDir": "/"
                 },
                 "type": "copy-in"
@@ -256,7 +256,7 @@
             {
                 "comment": "env",
                 "op": {
-                    "File": "/data/env.sh",
+                    "File": "env.sh",
                     "Dest": "/etc/profile.d/path.sh"
                 },
                 "type": "upload"
@@ -264,7 +264,7 @@
             {
                 "comment": "copy-in bootstrap dir",
                 "op": {
-                    "LocalPath": "/data/bootstrap",
+                    "LocalPath": "bootstrap",
                     "RemoteDir": "/"
                 },
                 "type": "copy-in"
