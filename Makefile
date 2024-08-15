@@ -79,3 +79,10 @@ complexity-test: kernel-images root-images
 			--build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
 			-f dockerfiles/complexity-test-images -t $(COMPLEXITY_TEST_IMAGES):$$v . ; \
 	done
+
+.PHONY: systemd-workaround
+systemd-workaround:
+	$(DOCKER) rm systemd-workaround-builder || true
+	$(DOCKER) run -v $(CURDIR)/systemd-workaround:/src:Z --name systemd-workaround-builder gcc:14 sh -c 'make -C /src'
+	cp $(CURDIR)/systemd-workaround/systemd-pidfd-fix.so _data/bootstrap/
+	$(DOCKER) rm systemd-workaround-builder
