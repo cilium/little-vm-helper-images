@@ -45,7 +45,9 @@
                  [ "--disable", "CONFIG_SECURITY_APPARMOR"],
                  [ "--disable", "CONFIG_MODULE_SIG"],
                  [ "--disable", "CONFIG_MODULE_SIG_ALL"],
-                 [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ]
+                 [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
+                 [ "--enable", "CONFIG_RANDOMIZE_BASE" ],
+                 [ "--enable", "CONFIG_RELOCATABLE" ]
             ]
         }
     ],
@@ -306,6 +308,12 @@
         [ "--disable", "CONFIG_ARCH_XGENE"],
         [ "--disable", "CONFIG_ARCH_ZYNQMP"],
 
-        [ "--enable", "CONFIG_X86_X32" ]
+        [ "--enable", "CONFIG_X86_X32" ],
+
+        [ "--enable", "CONFIG_EXPERT" ],
+        [ "--disable", "CONFIG_EFI" ],
+        [ "--disable", "CONFIG_RANDOMIZE_MODULE_REGION_FULL" ],
+        [ "--disable", "CONFIG_RANDOMIZE_BASE" ],
+        [ "--disable", "CONFIG_RELOCATABLE" ]
     ]
 }
