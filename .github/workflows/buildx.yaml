@@ -157,7 +157,7 @@ jobs:
     strategy:
       matrix:
         runner:
-          - {name: "ubuntu-latest-4cores-16gb", arch: "amd64"}
+          - {name: "ubuntu-latest", arch: "amd64"}
           - {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
@@ -179,7 +179,7 @@ jobs:
     strategy:
       matrix:
         runner:
-          - {name: "ubuntu-latest-4cores-16gb", arch: "amd64"}
+          - {name: "ubuntu-latest", arch: "amd64"}
           - {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
@@ -205,7 +205,7 @@ jobs:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
         runner:
-          - {name: "ubuntu-latest-4cores-16gb", arch: "amd64"}
+          - {name: "ubuntu-latest", arch: "amd64"}
           - {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
         exclude:
           - runner: {name: "actuated-arm64-4cpu-16gb", arch: "arm64"}
