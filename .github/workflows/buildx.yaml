@@ -276,18 +276,20 @@ jobs:
           path: /tmp/artifacts
       - name: push new version
         id: push
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           git switch -c tmp
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
           find /tmp/artifacts -type f ! -size 0 | xargs git am
-          git reset --soft ${{ github.event.pull_request.head.ref }}
+          git reset --soft "$HEAD_REF"
           git status
           f=$(mktemp)
           echo "GHA: update tags" >> $f
           echo "" >> $f
           git commit -a -F $f --trailer "X-GHA-TAG: ${{ needs.conf.outputs.tag }}"
-          git push --force origin HEAD:${{ github.event.pull_request.head.ref }}
+          git push --force origin HEAD:"$HEAD_REF"
           sha=$(git rev-parse HEAD)
           echo "sha=$sha" | tee -a $GITHUB_OUTPUT
       - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
