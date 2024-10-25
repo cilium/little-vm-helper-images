@@ -1,6 +1,6 @@
 {
     "kernels": [
-        {
+	{
             "name": "bpf-next",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1",
             "opts": [
@@ -10,6 +10,13 @@
         {
             "name": "bpf",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git?depth=1",
+            "opts": [
+                 [ "--enable",  "CONFIG_NETKIT"]
+            ]
+	},
+	{
+            "name": "bpf-net",
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1#net",
             "opts": [
                  [ "--enable",  "CONFIG_NETKIT"]
             ]

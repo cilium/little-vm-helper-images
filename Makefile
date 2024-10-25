@@ -10,7 +10,7 @@ COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/complexity-test-ci
 KERNEL_BUILDER_TAG        ?= main
 ROOT_BUILDER_TAG          ?= main
 ROOT_IMAGES_TAG           ?= main
-KERNEL_VERSIONS           ?= 4.19 5.4 5.10 5.15 6.1 6.6 bpf bpf-next
+KERNEL_VERSIONS           ?= 4.19 5.4 5.10 5.15 6.1 6.6 bpf bpf-net bpf-next
 
 DOCKER ?= docker
 export DOCKER_BUILDKIT = 1
