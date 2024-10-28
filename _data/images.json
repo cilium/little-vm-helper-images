@@ -126,14 +126,14 @@
             },
             {
                 "op": {
-                    "File": "/etc/sysctl.conf",
+                    "File": "/etc/sysctl.d/99-sysctl.conf",
                     "Line": "fs.inotify.max_user_watches = 524288"
                 },
                 "type": "append-line"
             },
             {
                 "op": {
-                    "File": "/etc/sysctl.conf",
+                    "File": "/etc/sysctl.d/99-sysctl.conf",
                     "Line": "fs.inotify.max_user_instances = 512"
                 },
                 "type": "append-line"
