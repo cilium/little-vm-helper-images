@@ -187,6 +187,7 @@
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_SOCKET" ],
         [ "--module", "CONFIG_NETFILTER_XT_SET" ],
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_CT" ],
+        [ "--module", "CONFIG_NETFILTER_XT_TARGET_MARK" ],
         [ "--module", "CONFIG_NETFILTER_XT_TARGET_TPROXY" ],
         [ "--module", "CONFIG_VXLAN" ],
         [ "--module", "CONFIG_MACVLAN" ],
