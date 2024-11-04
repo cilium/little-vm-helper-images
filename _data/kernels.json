@@ -54,7 +54,9 @@
                  [ "--disable", "CONFIG_MODULE_SIG_ALL"],
                  [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
                  [ "--enable", "CONFIG_RANDOMIZE_BASE" ],
-                 [ "--enable", "CONFIG_RELOCATABLE" ]
+                 [ "--enable", "CONFIG_RELOCATABLE" ],
+                 [ "--enable", "CONFIG_X86_64" ],
+                 [ "--disable", "CONFIG_EFI_MIXED" ]
             ]
         }
     ],
