@@ -78,6 +78,7 @@
         {
             "name": "rhel8",
             "opts": [
+                 [ "--enable", "CONFIG_EFI" ],
                  [ "--enable",  "CONFIG_EXT4_FS"],
                  [ "--disable", "CONFIG_SECURITY_APPARMOR"],
                  [ "--disable", "CONFIG_MODULE_SIG"],
