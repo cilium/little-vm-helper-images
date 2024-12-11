@@ -52,6 +52,14 @@
                 "type": "append-line"
             },
             {
+                "comment": "systemd workaround: copy /etc/profile.d/70-systemd-shell-extra.sh without unset variables",
+                "op": {
+                    "File": "70-systemd-shell-extra.sh",
+                    "Dest": "/etc/profile.d/70-systemd-shell-extra.sh"
+                },
+                "type": "upload"
+            },
+            {
                 "comment": "systemd workaround: copy .so",
                 "op": {
                     "LocalPath": "bootstrap/systemd-pidfd-fix.so",
@@ -143,6 +151,14 @@
                 "op": {
                     "File": "env.sh",
                     "Dest": "/etc/profile.d/path.sh"
+                },
+                "type": "upload"
+            },
+            {
+                "comment": "systemd workaround: copy /etc/profile.d/70-systemd-shell-extra.sh without unset variables",
+                "op": {
+                    "File": "70-systemd-shell-extra.sh",
+                    "Dest": "/etc/profile.d/70-systemd-shell-extra.sh"
                 },
                 "type": "upload"
             },
@@ -258,6 +274,14 @@
                 "op": {
                     "File": "env.sh",
                     "Dest": "/etc/profile.d/path.sh"
+                },
+                "type": "upload"
+            },
+            {
+                "comment": "systemd workaround: copy /etc/profile.d/70-systemd-shell-extra.sh without unset variables",
+                "op": {
+                    "File": "70-systemd-shell-extra.sh",
+                    "Dest": "/etc/profile.d/70-systemd-shell-extra.sh"
                 },
                 "type": "upload"
             },
