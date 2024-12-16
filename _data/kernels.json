@@ -23,7 +23,10 @@
 	},
         {
             "name": "6.12",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.12.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.12.y",
+            "opts": [
+                 [ "--enable",  "CONFIG_NETKIT"]
+            ]
         },
 	{
             "name": "6.6",
