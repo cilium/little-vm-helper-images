@@ -13,7 +13,9 @@
             "vim",
             "binutils",
             "netcat-openbsd",
-            "systemd-resolved"
+            "systemd-resolved",
+            "dnsutils"
+
         ],
         "actions": [
             {
@@ -85,7 +87,9 @@
             "libarchive-tools",
             "ethtool",
             "systemd-resolved",
-            "ntpdate"
+            "ntpdate",
+            "dnsutils"
+
         ],
         "actions": [
             {
@@ -220,7 +224,8 @@
             "make",
             "git",
             "gcc",
-            "systemd-resolved"
+            "systemd-resolved",
+            "dnsutils"
         ],
         "actions": [
             {
