@@ -118,7 +118,7 @@ jobs:
     with:
      name: kernel-builder
      build-file: dockerfiles/kernel-builder
-     build-tag: quay.io/lvh-images/kernel-builder-ci:${{ needs.conf.outputs.tag }}
+     build-tag: ghcr.io/lvh-images/kernel-builder-ci:${{ needs.conf.outputs.tag }}
      check-files: dockerfiles/kernel-builder
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
@@ -137,7 +137,7 @@ jobs:
     with:
      name: kernel-image-${{ matrix.kernel.ver }}
      build-file: ${{ matrix.kernel.dockerfile }}
-     build-tag: quay.io/lvh-images/kernel-images-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
+     build-tag: ghcr.io/lvh-images/kernel-images-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "RHEL_VER=${{ matrix.kernel.rhel_ver }}"
@@ -166,7 +166,7 @@ jobs:
      runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-builder
      build-file: dockerfiles/root-builder
-     build-tag: quay.io/lvh-images/root-builder-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-tag: ghcr.io/lvh-images/root-builder-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      patch-cmd: |
@@ -188,7 +188,7 @@ jobs:
      runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
-     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-tag: ghcr.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
      build-args: |
           "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
      base-ref: ${{ github.base_ref }}
@@ -218,7 +218,7 @@ jobs:
      name: kind-image-${{ matrix.kernel.ver }}-${{ matrix.runner.arch }}
      runner: ${{ matrix.runner.name }}
      build-file: dockerfiles/kind-images
-     build-tag: quay.io/lvh-images/kind-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-tag: ghcr.io/lvh-images/kind-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
@@ -244,7 +244,7 @@ jobs:
     with:
      name: complexity-test-${{ matrix.kernel.ver }}-amd64
      build-file: dockerfiles/complexity-test-images
-     build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
+     build-tag: ghcr.io/lvh-images/complexity-test-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
@@ -329,7 +329,7 @@ jobs:
         working-directory: /tmp
         shell: bash
         run: |
-          crane export quay.io/lvh-images/lvh:latest --platform linux/$(dpkg --print-architecture) lvh.tar
+          crane export ghcr.io/lvh-images/lvh:latest --platform linux/$(dpkg --print-architecture) lvh.tar
           tar --transform='s#usr/bin/##g' -xf lvh.tar usr/bin/lvh
           rm lvh.tar
           chmod +x lvh && sudo mv lvh /usr/local/bin
@@ -368,7 +368,7 @@ jobs:
 
             v=$(basename $f)
             image_tag=$(cat $f)
-            image="quay.io/lvh-images/kind-ci:$v-$image_tag"
+            image="ghcr.io/lvh-images/kind-ci:$v-$image_tag"
 
             # extract the qcow2 image
             crane export $image --platform linux/$(dpkg --print-architecture) $images_folder/kind_$v.tar
@@ -381,7 +381,7 @@ jobs:
             if [ "$(uname -m)" = "aarch64" ]; then
               # extract the compressed kernel
               kernel_tag=$(cat ../kernel-images/$v)
-              kernel="quay.io/lvh-images/kernel-images-ci:$v-$kernel_tag"
+              kernel="ghcr.io/lvh-images/kernel-images-ci:$v-$kernel_tag"
               crane export $kernel --platform linux/$(dpkg --print-architecture) $images_folder/kernel_$v.tar
               tar --transform="s#data/kernels/$v/boot/##g" --wildcards -xvf $images_folder/kernel_$v.tar data/kernels/$v/boot/vmlinuz*
               mv vmlinuz* $images_folder/vmlinuz
