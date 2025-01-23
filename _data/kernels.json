@@ -120,6 +120,7 @@
         [ "--enable", "CONFIG_NAMESPACES" ],
         [ "--enable", "CONFIG_NET_9P_VIRTIO" ],
         [ "--enable", "CONFIG_NET_9P" ],
+        [ "--enable", "CONFIG_NET_SCHED" ],
         [ "--enable", "CONFIG_NET_ACT_BPF" ],
         [ "--enable", "CONFIG_NET_CLS_ACT" ],
         [ "--enable", "CONFIG_NET_CLS_BPF" ],
