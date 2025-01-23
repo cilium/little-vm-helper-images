@@ -146,6 +146,7 @@
         [ "--module", "CONFIG_TEST_BPF" ],
         [ "--module", "CONFIG_TLS" ],
         [ "--module", "CONFIG_WIREGUARD" ],
+        [ "--enable", "CONFIG_IPV6" ],
 
         [ "--enable", "CONFIG_BRIDGE" ],
         [ "--enable", "CONFIG_DM_THIN_PROVISIONING" ],
