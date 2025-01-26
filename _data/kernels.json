@@ -4,49 +4,68 @@
             "name": "bpf-next",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1",
             "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"]
+                 [ "--enable",  "CONFIG_NETKIT"],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
         {
             "name": "bpf",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git?depth=1",
             "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"]
+                 [ "--enable",  "CONFIG_NETKIT"],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
 	{
             "name": "bpf-net",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1#net",
             "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"]
+                 [ "--enable",  "CONFIG_NETKIT"],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
         {
             "name": "6.12",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.12.y",
             "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"]
+                 [ "--enable",  "CONFIG_NETKIT"],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
             ]
         },
 	{
             "name": "6.6",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.6.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.6.y",
+            "opts": [
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
         },
         {
             "name": "6.1",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.1.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.1.y",
+            "opts": [
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
         },
         {
             "name": "5.15",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.15.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.15.y",
+            "opts": [
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
         },
         {
             "name": "5.10",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.10.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.10.y",
+            "opts": [
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
         },
         {
             "name": "5.4",
-            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.4.y"
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-5.4.y",
+            "opts": [
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
         },
         {
             "name": "4.19",
@@ -61,7 +80,8 @@
                  [ "--disable", "CONFIG_MODULE_SIG_ALL"],
                  [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
                  [ "--enable", "CONFIG_RANDOMIZE_BASE" ],
-                 [ "--enable", "CONFIG_RELOCATABLE" ]
+                 [ "--enable", "CONFIG_RELOCATABLE" ],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
             ]
         }
     ],
