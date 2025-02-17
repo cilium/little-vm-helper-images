@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   # Run once a day.
   schedule:
-    - cron: "0 1 * * *"
+    - cron: "0 1 * * 1"
 jobs:
   create-pr:
     runs-on: ubuntu-latest
