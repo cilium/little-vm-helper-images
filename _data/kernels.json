@@ -169,6 +169,7 @@
         [ "--enable", "CONFIG_IPV6" ],
 
         [ "--enable", "CONFIG_BRIDGE" ],
+        [ "--enable", "CONFIG_BRIDGE_VLAN_FILTERING" ],
         [ "--enable", "CONFIG_DM_THIN_PROVISIONING" ],
         [ "--enable", "CONFIG_IP_VS" ],
         [ "--enable", "CONFIG_NETFILTER_ADVANCED" ],
@@ -210,6 +211,7 @@
         [ "--enable", "CONFIG_IP6_NF_TARGET_MASQUERADE" ],
         [ "--module", "CONFIG_GENEVE" ],
         [ "--module", "CONFIG_IP_SET_HASH_IP" ],
+        [ "--module", "CONFIG_IP_SET_HASH_NET" ],
         [ "--module", "CONFIG_IP_SET" ],
         [ "--module", "CONFIG_NET_SCH_FQ" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_MARK" ],
