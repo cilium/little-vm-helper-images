@@ -67,7 +67,7 @@ jobs:
 
       - name: download first patch
         if: ${{ steps.check.outputs.build == 'y' && inputs.apply-patch != '' }}
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@b14cf4c92620c250e1c074ab0a5800e37df86765 # v4.2.0
         with:
            name: ${{ inputs.apply-patch }}
            path: /tmp/
@@ -82,7 +82,7 @@ jobs:
 
       - name: download second patch
         if: ${{ steps.check.outputs.build == 'y' && inputs.apply-patch-2 != '' }}
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@b14cf4c92620c250e1c074ab0a5800e37df86765 # v4.2.0
         with:
            name: ${{ inputs.apply-patch-2 }}
            path: /tmp/
