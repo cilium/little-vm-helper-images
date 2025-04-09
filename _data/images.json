@@ -85,7 +85,7 @@
             "libarchive-tools",
             "ethtool",
             "systemd-resolved",
-            "ntpdate",
+            "ntpsec-ntpdate",
             "bind9-dnsutils"
         ],
         "actions": [
