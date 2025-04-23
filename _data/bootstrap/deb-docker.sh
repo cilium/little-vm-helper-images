@@ -9,11 +9,11 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | \
 chmod 0644 /usr/share/keyrings/docker-archive-keyring.gpg
 
 cat > /etc/apt/sources.list.d/docker.list <<EOF
-deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable
+deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bookworm stable
 EOF
 
 apt-get update --quiet && apt-get install --quiet --yes --no-install-recommends \
-    docker-ce docker-ce-cli containerd.io
+    docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # for iptables 1.8.8
 update-alternatives --set iptables /usr/sbin/iptables-legacy
