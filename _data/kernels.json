@@ -25,6 +25,14 @@
             ]
 	},
         {
+                "name": "l4_csum_replace-ipv6-addr",
+                "url": "https://github.com/pchaigno/linux?depth=1#l4_csum_replace-ipv6-addr",
+                "opts": [
+                        [ "--enable",  "CONFIG_NETKIT"],
+                        [ "--enable",  "CONFIG_FUSE_FS"]
+                ]
+        },
+        {
             "name": "6.12",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.12.y",
             "opts": [
