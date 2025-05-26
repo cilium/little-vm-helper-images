@@ -1,4 +1,6 @@
 name: update images
+permissions:
+  contents: write
 on:
   # Allow manual triggers.
   workflow_dispatch: {}
@@ -9,15 +11,27 @@ jobs:
   create-pr:
     runs-on: ubuntu-latest
     steps:
+      - name: Get token
+        id: app-token
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # 2.0.6
+        with:
+          app-id: ${{ secrets.AUTO_COMMITTER_LVH_APP_ID }}
+          private-key: ${{ secrets.AUTO_COMMITTER_LVH_PRIVATE_KEY }}
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
       - name: checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
       - name: commit
         id: commit
         run: |
           id=$(date +%Y%m%d.%H%M%S)
           git switch -c pr/update-images-${id}
-          git config user.name "GH action"
-          git config user.email "ghabot@does.not.exist.cilium.org"
           echo "update $id" > misc/dummy
           git add misc/dummy
           git commit -a -m "update-images: $id"
@@ -26,7 +40,7 @@ jobs:
           echo "id=$id" | tee -a $GITHUB_OUTPUT
       - name: push PR
         env:
-          GH_TOKEN: ${{ secrets.LVH_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           id=${{ steps.commit.outputs.id }}
           gh pr create \
