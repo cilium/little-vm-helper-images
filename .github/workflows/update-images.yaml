@@ -1,8 +1,8 @@
-name: update bpf-next
+name: update images
 on:
   # Allow manual triggers.
   workflow_dispatch: {}
-  # Run once a day.
+  # Run weekly (every Monday at 00:01)
   schedule:
     - cron: "0 1 * * 1"
 jobs:
@@ -15,16 +15,14 @@ jobs:
         id: commit
         run: |
           id=$(date +%Y%m%d.%H%M%S)
-          git switch -c pr/bpf-next-${id}
+          git switch -c pr/update-images-${id}
           git config user.name "GH action"
           git config user.email "ghabot@does.not.exist.cilium.org"
-          echo "bpf-next $id" > misc/dummy
-          echo "bpf-net $id" >> misc/dummy
-          echo "bpf $id" >> misc/dummy
+          echo "update $id" > misc/dummy
           git add misc/dummy
-          git commit -a -m "bpf/bpf-next: $id"
+          git commit -a -m "update-images: $id"
           git show HEAD
-          git push --set-upstream origin pr/bpf-next-${id}
+          git push --set-upstream origin pr/update-images-${id}
           echo "id=$id" | tee -a $GITHUB_OUTPUT
       - name: push PR
         env:
@@ -32,8 +30,5 @@ jobs:
         run: |
           id=${{ steps.commit.outputs.id }}
           gh pr create \
-            -l "gha-builds/kernel/bpf-next" \
-            -l "gha-builds/kernel/bpf-net" \
-            -l "gha-builds/kernel/bpf" \
-            --title "bpf/bpf-next update: $id" \
-            --body "PR to update bpf/bpf-next" \
+            --title "update images: $id" \
+            --body "PR to update images" \
