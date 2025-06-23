@@ -20,7 +20,7 @@ jobs:
         run: |
           echo tag=${GITHUB_REF##*/} | tee -a $GITHUB_OUTPUT
       - name: setup docker buildx
-        uses: docker/setup-buildx-action@18ce135bb5112fa8ce4ed6c17ab05699d7f3a5e0 # v3.11.0
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
       - name: install crane
         env:
           VERSION: v0.19.1
