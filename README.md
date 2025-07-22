@@ -58,6 +58,36 @@ $ lvh  run --host-mount $(pwd) --image _data/images/base.qcow2
 - [complexity-test-images](./dockerfiles/complexity-test-images) builds kernel-specific versions of
   the complexity-test-image
 
+### Rhel8
+
+Rhel8 images are a bit specials and have their own
+[kernel-images-rhel8](./dockerfiles/kernel-images-rhel8).
+The exact version of the rhel8 kernel we clone can be found in the
+[buildx.yaml](.github/workflows/buildx.yaml) GitHub workflow file and has a
+special treatment in the ["kernel versions" step](https://github.com/cilium/little-vm-helper-images/blob/d59049f4be64565a491c73820ff02aa63f209c81/.github/workflows/buildx.yaml#L85-L96).
+Please note that previous link is a permalink and the versions might have
+changed.
+
+At the time of writing, this was the versions we built. You can notice that we
+also build those only for amd64 unlike the rest of the kernels.
+
+```javascript
+case 'rhel8.6':
+    options.dockerfile = "dockerfiles/kernel-images-rhel8"
+    options.platforms = 'linux/amd64'
+    options.rhel_ver = '8.6'
+    options.rhel_kver = '4.18.0-372.32.1.el8_6'
+    break
+case 'rhel8.9':
+    options.dockerfile = "dockerfiles/kernel-images-rhel8"
+    options.platforms = 'linux/amd64'
+    options.rhel_ver = '8.9'
+    options.rhel_kver = '4.18.0-513.24.1.el8_9'
+    break
+default:
+    options.dockerfile = "dockerfiles/kernel-images"
+    options.platforms = 'linux/amd64,linux/arm64'
+```
 
 ## GH actions
 
