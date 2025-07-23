@@ -3,7 +3,7 @@
 set -eu
 
 # renovate: datasource=github-releases depName=cilium/cilium
-CILIUM_VERSION=v1.17.5
+CILIUM_VERSION=v1.17.6
 WORKDIR=/tmp/workspace
 OCI_DIR=cilium-oci
 UNPACKED_DIR=cilium-unpacked
