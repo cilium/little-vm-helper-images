@@ -55,7 +55,7 @@
     },
     {
         "name": "kind.qcow2",
-        "image_size": "20G",
+        "image_size": "30G",
         "packages": [
             "jq",
             "wget",
