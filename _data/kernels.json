@@ -16,14 +16,22 @@
                  [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
-	{
+    {
             "name": "bpf-net",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1#net",
             "opts": [
                  [ "--enable",  "CONFIG_NETKIT"],
                  [ "--enable",  "CONFIG_FUSE_FS"]
             ]
-	},
+    },
+    {
+            "name": "improve-pruning-precision",
+            "url": "https://github.com/pchaigno/linux?depth=1#improve-pruning-by-reducing-precision",
+            "opts": [
+                 [ "--enable",  "CONFIG_NETKIT"],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
+    },
         {
             "name": "6.12",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.12.y",
