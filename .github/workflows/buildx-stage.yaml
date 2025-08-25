@@ -35,7 +35,7 @@ on:
       runner:
         type: string
         required: false
-        default: 'ubuntu-latest-4cores-16gb'
+        default: 'oracle-vm-4cpu-16gb-x86-64'
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
