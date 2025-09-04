@@ -18,7 +18,7 @@ jobs:
       tag: ${{ steps.configure.outputs.tag }}
       kvers: ${{ steps.kvers.outputs.result }}
     steps:
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         id: run-script
         name: run-script
         with:
@@ -35,7 +35,7 @@ jobs:
               }
             }
             return 'y'
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         id: dry-run-script
         name: dry-run-script
         with:
@@ -52,7 +52,7 @@ jobs:
               }
             }
             return 'n'
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         id: kvers
         name: kernel versions
         with:
@@ -292,7 +292,7 @@ jobs:
           git push --force origin HEAD:"$HEAD_REF"
           sha=$(git rev-parse HEAD)
           echo "sha=$sha" | tee -a $GITHUB_OUTPUT
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           SHA: ${{ steps.push.outputs.sha }}
         with:
@@ -410,7 +410,7 @@ jobs:
           echo 'EOF' >> $GITHUB_ENV
 
       - name: comment
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         if: ${{ github.event.pull_request.number != '' }}
         with:
           script: |
@@ -427,7 +427,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         if: ${{ needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
         env:
           SHA: ${{ needs.commit-changes.outputs.sha }}
@@ -441,7 +441,7 @@ jobs:
               description: "Images were generated and tags were updated",
               state: 'success',
             })
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         if: ${{ needs.commit-changes.result == 'success' && needs.conf.outputs.dry-run == 'y' }}
         env:
           SHA: ${{ needs.commit-changes.outputs.sha }}
@@ -455,7 +455,7 @@ jobs:
               description: "Everything went OK, but this was a dry-run. Failing final check.",
               state: 'failure',
             })
-      - uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         if: ${{ needs.commit-changes.result != 'success' && needs.commit-changes.outputs.sha != '' }}
         env:
           SHA: ${{ needs.commit-changes.outputs.sha }}
