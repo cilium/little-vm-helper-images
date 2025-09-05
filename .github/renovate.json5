@@ -1,72 +1,74 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":gitSignOff",
-    "helpers:pinGitHubActionDigests"
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    ':gitSignOff',
+    'helpers:pinGitHubActionDigests',
   ],
   // This ensures that the gitAuthor and gitSignOff fields match
-  "gitAuthor": "renovate[bot] <bot@renovateapp.com>",
-  "includePaths": [
-    ".github/workflows/**",
-    "_data/bootstrap/bpf-tools.sh",
-    "_data/bootstrap/golang.sh",
-    "_data/bootstrap/kind.sh",
-    "_data/bootstrap/deb-k8s.sh"
+  gitAuthor: 'renovate[bot] <bot@renovateapp.com>',
+  includePaths: [
+    '.github/workflows/**',
+    '_data/bootstrap/bpf-tools.sh',
+    '_data/bootstrap/golang.sh',
+    '_data/bootstrap/kind.sh',
+    '_data/bootstrap/deb-k8s.sh',
   ],
-  "pinDigests": true,
-  "ignorePresets": [":prHourlyLimit2"],
-  "separateMajorMinor": true,
-  "separateMultipleMajor": true,
-  "separateMinorPatch": true,
-  "pruneStaleBranches": true,
-  "baseBranches": [
-    "main"
+  pinDigests: true,
+  ignorePresets: [
+    ':prHourlyLimit2',
   ],
-  "vulnerabilityAlerts": {
-    "enabled": true
+  separateMajorMinor: true,
+  separateMultipleMajor: true,
+  separateMinorPatch: true,
+  pruneStaleBranches: true,
+  baseBranchPatterns: [
+    'main',
+  ],
+  vulnerabilityAlerts: {
+    enabled: true,
   },
-  "labels": [
-    "dependencies",
-    "renovate/stop-updating",
+  labels: [
+    'dependencies',
+    'renovate/stop-updating',
   ],
-  "stopUpdatingLabel": "renovate/stop-updating",
-  "packageRules": [
+  stopUpdatingLabel: 'renovate/stop-updating',
+  packageRules: [
     {
-      "groupName": "all github action dependencies",
-      "groupSlug": "all-github-action",
-      "matchFileNames": [
-        ".github/workflows/**"
+      groupName: 'all github action dependencies',
+      groupSlug: 'all-github-action',
+      matchFileNames: [
+        '.github/workflows/**',
       ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "digest",
-        "patch",
-        "pin",
-        "pinDigest"
+      matchUpdateTypes: [
+        'major',
+        'minor',
+        'digest',
+        'patch',
+        'pin',
+        'pinDigest',
       ],
       // Don't build images for PRs updating Github actions only
-      "addLabels": [
-      	"gha-builds/just-dont",
+      addLabels: [
+        'gha-builds/just-dont',
       ],
     },
   ],
-  "customManagers": [
+  customManagers: [
     {
-      "customType": "regex",
-      "fileMatch": [
-        "^_data/bootstrap/bpf-tools\\.sh$",
-        "^_data/bootstrap/golang\\.sh$",
-        "^_data/bootstrap/kind\\.sh$",
-        "^_data/bootstrap/deb-k8s\\.sh$"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^_data/bootstrap/bpf-tools\\.sh$/',
+        '/^_data/bootstrap/golang\\.sh$/',
+        '/^_data/bootstrap/kind\\.sh$/',
+        '/^_data/bootstrap/deb-k8s\\.sh$/',
       ],
       // This regex manages version strings in bootstrap files,
       // similar to the examples shown here:
       //   https://docs.renovatebot.com/modules/manager/regex/#advanced-capture
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+.+_VERSION=(?<currentValue>.*)"
-      ]
-    }
-  ]
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+.+_VERSION=(?<currentValue>.*)',
+      ],
+    },
+  ],
 }
