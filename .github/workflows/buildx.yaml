@@ -158,7 +158,7 @@ jobs:
       matrix:
         runner:
           - {name: "ubuntu-latest", arch: "amd64"}
-          - {name: "ubuntu-22.04-arm64", arch: "arm64"}
+          - {name: "oracle-vm-4cpu-16gb-arm64", arch: "arm64"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
@@ -180,7 +180,7 @@ jobs:
       matrix:
         runner:
           - {name: "ubuntu-latest", arch: "amd64"}
-          - {name: "ubuntu-22.04-arm64", arch: "arm64"}
+          - {name: "oracle-vm-4cpu-16gb-arm64", arch: "arm64"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
@@ -206,11 +206,11 @@ jobs:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
         runner:
           - {name: "ubuntu-latest", arch: "amd64"}
-          - {name: "ubuntu-22.04-arm64", arch: "arm64"}
+          - {name: "oracle-vm-4cpu-16gb-arm64", arch: "arm64"}
         exclude:
-          - runner: {name: "ubuntu-22.04-arm64", arch: "arm64"}
+          - runner: {name: "oracle-vm-4cpu-16gb-arm64", arch: "arm64"}
             kernel: {ver: "rhel8.6"}
-          - runner: {name: "ubuntu-22.04-arm64", arch: "arm64"}
+          - runner: {name: "oracle-vm-4cpu-16gb-arm64", arch: "arm64"}
             kernel: {ver: "rhel8.9"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
@@ -313,7 +313,7 @@ jobs:
       matrix:
         runner:
           - "ubuntu-latest"
-          - "ubuntu-22.04-arm64"
+          - "oracle-vm-4cpu-16gb-arm64"
     runs-on: ${{ matrix.runner }}
     steps:
       - name: install crane
