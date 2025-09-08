@@ -195,7 +195,6 @@
         [ "--enable", "CONFIG_NF_SOCKET_IPV4" ],
         [ "--enable", "CONFIG_NF_SOCKET_IPV6" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_SOCKET" ],
-        [ "--enable", "CONFIG_NETFILTER_XTABLES_LEGACY" ],
 
         [ "--module", "CONFIG_IP_NF_TARGET_REDIRECT" ],
         [ "--module", "CONFIG_NETFILTER_XT_MATCH_COMMENT" ],
