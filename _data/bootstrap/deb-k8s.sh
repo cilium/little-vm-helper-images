@@ -4,7 +4,7 @@ set -euxo pipefail
 . /etc/profile
 
 # renovate: datasource=github-releases depName=kubernetes/kubernetes
-KUBECTL_VERSION=1.34.0
+KUBECTL_VERSION=1.34.1
 ARCH=$(dpkg --print-architecture)
 
 curl -LO "https://dl.k8s.io/release/v$KUBECTL_VERSION/bin/linux/$ARCH/kubectl"
