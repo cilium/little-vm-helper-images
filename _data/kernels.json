@@ -85,7 +85,8 @@
                  [ "--disable", "CONFIG_IPV6_SEG6_LWTUNNEL" ],
                  [ "--enable", "CONFIG_RANDOMIZE_BASE" ],
                  [ "--enable", "CONFIG_RELOCATABLE" ],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
+                 [ "--enable",  "CONFIG_FUSE_FS"],
+                 [ "--enable",  "CONFIG_EFI"]
             ]
         }
     ],
