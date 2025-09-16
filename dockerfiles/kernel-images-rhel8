@@ -16,6 +16,7 @@ ARG RHEL_KURL
 
 WORKDIR /tmp
 RUN curl -fLO "${RHEL_KURL}"
+
 RUN rpm -ivh kernel*.src.rpm
 
 WORKDIR /root/rpmbuild/SPECS
@@ -48,5 +49,5 @@ COPY scripts/generate-btf.sh /tmp/
 RUN /tmp/generate-btf.sh /tmp/build/tar-install
 
 FROM busybox as kernel
-ARG RHEL_VER=8.6
+ARG RHEL_VER=8.10
 COPY --from=build /tmp/build/tar-install /data/kernels/rhel${RHEL_VER}
