@@ -63,7 +63,7 @@ kind: kernel-images root-images
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) build --no-cache \
 			--build-arg KERNEL_VER=$$v \
-			--build-arg KERNEL_IMAGE_TAG=$$v-${KERNEL_BUILDER_TAG} \
+			--build-arg KERNEL_IMAGE_TAG=$$v \
 			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
 			--build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
 			-f dockerfiles/kind-images -t $(KIND_IMAGES):$$v . ; \
@@ -74,7 +74,7 @@ complexity-test: kernel-images root-images
 	for v in $(KERNEL_VERSIONS) ; do \
 		 $(DOCKER) build --no-cache \
 			--build-arg KERNEL_VER=$$v \
-			--build-arg KERNEL_IMAGE_TAG=$$v-${KERNEL_BUILDER_TAG} \
+			--build-arg KERNEL_IMAGE_TAG=$$v \
 			--build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG)_ \
 			--build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
 			-f dockerfiles/complexity-test-images -t $(COMPLEXITY_TEST_IMAGES):$$v . ; \
