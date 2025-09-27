@@ -17,6 +17,10 @@
             ]
 	},
 	{
+  "name": "oracle",
+  "url": "https://github.com/pchaigno/linux?depth=1#verifier-oracle"
+},
+	{
             "name": "bpf-net",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1#net",
             "opts": [
