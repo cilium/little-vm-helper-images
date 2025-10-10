@@ -208,6 +208,29 @@ jobs:
         mkdir -p versions/root-images
         echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-images/${{ matrix.runner.arch }}
 
+  # this one is for older kernels where there is some compatibility issue on some
+  # dependency from the unstable release branch
+  root-images-stable-amd64:
+    needs: [conf, root-builder]
+    if: ${{ needs.conf.outputs.run == 'y' }}
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: root-images-amd64-bookworm
+     runner: ubuntu-latest
+     check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
+     build-file: dockerfiles/root-images
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-args: |
+          "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
+          "PKG_REPO=bookworm"
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     apply-patch: root-builder-amd64.patch
+     patch-cmd: |
+        mkdir -p versions/root-images
+        echo ${{ needs.conf.outputs.tag }}-amd64-bookworm > versions/root-images/${{ matrix.runner.arch }}-bookworm
+
   kind-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
     needs: [conf, kernel-images, root-images]
@@ -251,24 +274,35 @@ jobs:
     strategy:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
-    uses: ./.github/workflows/buildx-stage.yaml
-    secrets: inherit
-    with:
-     name: complexity-test-${{ matrix.kernel.ver }}-amd64
-     build-file: dockerfiles/complexity-test-images
-     build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
-     build-args: |
-          "KERNEL_VER=${{ matrix.kernel.ver }}"
-          "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=$(cat versions/root-images/amd64)"
-     check-files: '.'
-     base-ref: ${{ github.base_ref }}
-     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
-     apply-patch: root-images-amd64.patch
-     apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
-     patch-cmd: |
-         mkdir -p versions/complexity-test
-         echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel.ver }}
+    steps:
+      - name: "define root image"
+        env:
+          ROOT_IMAGES_TAG: "$(cat versions/root-images/amd64)"
+        # for this kernel we want a different root image due to 
+        # compatibility issues on some packages
+        run: | 
+          if [ ${{ matrix.kernel.ver }} == "rhel8.6" ]; then
+            ROOT_IMAGES_TAG="$(cat versions/root-images/amd64-bookworm)"
+          fi
+      - name: "build"
+        uses: ./.github/workflows/buildx-stage.yaml
+        secrets: inherit
+        with:
+          name: complexity-test-${{ matrix.kernel.ver }}-amd64
+          build-file: dockerfiles/complexity-test-images
+          build-tag: quay.io/lvh-images/complexity-test-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}
+          build-args: |
+                "KERNEL_VER=${{ matrix.kernel.ver }}"
+                "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
+                "ROOT_IMAGES_TAG=$(cat versions/root-images/amd64)"
+          check-files: '.'
+          base-ref: ${{ github.base_ref }}
+          dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+          apply-patch: root-images-amd64.patch
+          apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
+          patch-cmd: |
+              mkdir -p versions/complexity-test
+              echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel.ver }}
 
   commit-changes:
     if: ${{ needs.conf.outputs.run == 'y' }}
