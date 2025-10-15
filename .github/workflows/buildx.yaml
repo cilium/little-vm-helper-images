@@ -101,7 +101,7 @@ jobs:
                           options.platforms = 'linux/amd64'
                           options.rhel_repo = 'pub'
                           options.rhel_ver = '8.10'
-                          options.rhel_kver = '4.18.0-553.72.1.el8_10'
+                          options.rhel_kver = '4.18.0-553.77.1.el8_10'
                           break
                       default:
                           options.dockerfile = "dockerfiles/kernel-images"
