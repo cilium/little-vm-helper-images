@@ -9,7 +9,7 @@ ARG KERNEL_IMAGE_TAG=bpf-next
 
 FROM quay.io/lvh-images/root-images-ci:"${ROOT_IMAGES_TAG}" AS root-images
 FROM quay.io/lvh-images/kernel-images-ci:"${KERNEL_IMAGE_TAG}" AS kimg
-FROM quay.io/lvh-images/lvh:v0.0.19 AS lvh
+FROM quay.io/lvh-images/lvh:v0.0.27 AS lvh
 FROM ubuntu:rolling AS builder
 
 ARG KERNEL_VER=bpf-next
