@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 # vim: set ft=dockerfile:
 
-FROM quay.io/lvh-images/lvh:v0.0.19 AS lvh
+FROM quay.io/lvh-images/lvh:v0.0.27 AS lvh
 
 FROM rockylinux:8 AS builder
 
@@ -40,7 +40,8 @@ RUN sed --in-place -E -e 's/^(CONFIG_[^=]+)=m/# \1 is not set/' .config
 
 COPY _data /data
 
-RUN lvh kernels --dir /data raw_configure . rhel8 2>&1
+ARG TARGETARCH
+RUN lvh kernels --dir /data raw_configure --arch $TARGETARCH . rhel8 2>&1
 
 FROM prepare AS build
 
