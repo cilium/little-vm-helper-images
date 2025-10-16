@@ -16,3 +16,5 @@ EOF
 chmod 644 "$config_path"
 
 systemctl enable systemd-networkd
+
+ip ad
