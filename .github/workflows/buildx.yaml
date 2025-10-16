@@ -88,6 +88,7 @@ jobs:
                           options.rhel_repo = 'vault'
                           options.rhel_ver = '8.6'
                           options.rhel_kver = '4.18.0-372.32.1.el8_6'
+                          options.root_image_repo = "bookworm"
                           break
                       case 'rhel8.9':
                           options.dockerfile = "dockerfiles/kernel-images-rhel8"
@@ -95,6 +96,7 @@ jobs:
                           options.rhel_repo = 'vault'
                           options.rhel_ver = '8.9'
                           options.rhel_kver = '4.18.0-513.24.1.el8_9'
+                          options.root_image_repo = "bookworm"
                           break
                       case 'rhel8.10':
                           options.dockerfile = "dockerfiles/kernel-images-rhel8"
@@ -102,10 +104,12 @@ jobs:
                           options.rhel_repo = 'pub'
                           options.rhel_ver = '8.10'
                           options.rhel_kver = '4.18.0-553.72.1.el8_10'
+                          options.root_image_repo = "bookworm"
                           break
                       default:
                           options.dockerfile = "dockerfiles/kernel-images"
                           options.platforms = 'linux/amd64,linux/arm64'
+                          options.root_image_repo = "sid"
                   }
                   ret.push(options)
               }
@@ -188,25 +192,29 @@ jobs:
     if: ${{ needs.conf.outputs.run == 'y' }}
     strategy:
       matrix:
+        pkg_repo:
+          - {name: "sid"}
+          - {name: "bookworm"}
         runner:
           - {name: "ubuntu-latest", arch: "amd64"}
           - {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: root-images-${{ matrix.runner.arch }}
+     name: root-images-${{ matrix.runner.arch }}-${{ matrix.pkg_repo.name }}
      runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
-     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}-${{ matrix.pkg_repo.name }}
      build-args: |
           "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
+          "PKG_REPO=${{ matrix.pkg_repo.name }}"
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: root-builder-${{ matrix.runner.arch }}.patch
      patch-cmd: |
         mkdir -p versions/root-images
-        echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-images/${{ matrix.runner.arch }}
+        echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}-${{ matrix.pkg_repo.name }} > versions/root-images/${{ matrix.runner.arch }}-${{ matrix.pkg_repo.name }}
 
   kind-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
@@ -234,7 +242,7 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.runner.arch }})"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.runner.arch }}-${{ matrix.kernel.root_image_repo }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
@@ -260,7 +268,7 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=$(cat versions/root-images/amd64)"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/amd64-${{ matrix.kernel.root_image_repo }})"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}

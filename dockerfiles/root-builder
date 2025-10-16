@@ -1,5 +1,5 @@
 # vim: set ft=dockerfile:
-FROM quay.io/lvh-images/lvh:v0.0.19 AS lvh
+FROM quay.io/lvh-images/lvh:main AS lvh
 
 # rebuild: 20240730.231036
 
@@ -14,7 +14,7 @@ RUN apt-get update --quiet && \
           qemu-utils \
           linux-image-generic \
           zstd \
-          isc-dhcp-client
+          dhcpcd
 
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "amd64" ]; then apt-get install -yq --no-install-recommends extlinux; fi
