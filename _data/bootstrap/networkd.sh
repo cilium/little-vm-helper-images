@@ -16,3 +16,6 @@ EOF
 chmod 644 "$config_path"
 
 systemctl enable systemd-networkd
+ip link set up dev eth0 || /bin/true
+dhcpcd eth0 || /bin/true
+
