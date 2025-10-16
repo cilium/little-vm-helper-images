@@ -1,5 +1,5 @@
 # vim: set ft=dockerfile:
-FROM quay.io/lvh-images/lvh:v0.0.19 AS lvh
+FROM quay.io/lvh-images/lvh:v0.0.27 AS lvh
 
 # rebuild: 20240730.231036
 
