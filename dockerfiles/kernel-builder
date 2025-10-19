@@ -3,7 +3,7 @@ FROM quay.io/lvh-images/lvh:v0.0.19 AS lvh
 
 # 20240130.185425
 
-FROM ubuntu:rolling
+FROM ubuntu:latest
 
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 RUN  apt-get update -yq &&  \
