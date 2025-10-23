@@ -43,8 +43,9 @@ COPY <<EOF /data/images.json
 ]
 EOF
 
+ARG PKG_REPO=unstable
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --image complexity-test_${KERNEL_VER}.qcow2 --dir /data 2>&1
+RUN lvh images build --image complexity-test_${KERNEL_VER}.qcow2 --pkg-repo ${PKG_REPO} --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/complexity-test_${KERNEL_VER}.qcow2
 RUN rm /data/images/*.qcow2
 
