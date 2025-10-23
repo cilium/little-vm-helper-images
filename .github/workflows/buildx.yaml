@@ -88,6 +88,7 @@ jobs:
                           options.rhel_repo = 'vault'
                           options.rhel_ver = '8.6'
                           options.rhel_kver = '4.18.0-372.32.1.el8_6'
+                          options.pkg_repo = 'stable'
                           break
                       case 'rhel8.9':
                           options.dockerfile = "dockerfiles/kernel-images-rhel8"
@@ -95,6 +96,7 @@ jobs:
                           options.rhel_repo = 'vault'
                           options.rhel_ver = '8.9'
                           options.rhel_kver = '4.18.0-513.24.1.el8_9'
+                          options.pkg_repo = 'stable'
                           break
                       case 'rhel8.10':
                           options.dockerfile = "dockerfiles/kernel-images-rhel8"
@@ -102,10 +104,17 @@ jobs:
                           options.rhel_repo = 'pub'
                           options.rhel_ver = '8.10'
                           options.rhel_kver = '4.18.0-553.79.1.el8_10'
+                          options.pkg_repo = 'stable'
+                          break
+                      case '4.19':
+                          options.dockerfile = "dockerfiles/kernel-images"
+                          options.platforms = 'linux/amd64,linux/arm64'
+                          options.pkg_repo = 'stable'
                           break
                       default:
                           options.dockerfile = "dockerfiles/kernel-images"
                           options.platforms = 'linux/amd64,linux/arm64'
+                          options.pkg_repo = 'unstable'
                   }
                   ret.push(options)
               }
@@ -183,7 +192,7 @@ jobs:
         mkdir -p versions/root-builder
         echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-builder/${{ matrix.runner.arch }}
 
-  root-images:
+  root-images-unstable:
     needs: [conf, root-builder]
     if: ${{ needs.conf.outputs.run == 'y' }}
     strategy:
@@ -194,23 +203,50 @@ jobs:
     uses: ./.github/workflows/buildx-stage.yaml
     secrets: inherit
     with:
-     name: root-images-${{ matrix.runner.arch }}
+     name: root-images-unstable-${{ matrix.runner.arch }}
      runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
-     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-unstable-${{ matrix.runner.arch }}
      build-args: |
           "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
+          "PKG_REPO=sid"
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
      apply-patch: root-builder-${{ matrix.runner.arch }}.patch
      patch-cmd: |
         mkdir -p versions/root-images
-        echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-images/${{ matrix.runner.arch }}
+        echo ${{ needs.conf.outputs.tag }}-unstable-${{ matrix.runner.arch }} > versions/root-images/unstable-${{ matrix.runner.arch }}
+
+  root-images-stable:
+    needs: [conf, root-builder]
+    if: ${{ needs.conf.outputs.run == 'y' }}
+    strategy:
+      matrix:
+        runner:
+          - {name: "ubuntu-latest", arch: "amd64"}
+          - {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: root-images-stable-${{ matrix.runner.arch }}
+     runner: ${{ matrix.runner.name }}
+     check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
+     build-file: dockerfiles/root-images
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-stable-${{ matrix.runner.arch }}
+     build-args: |
+          "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
+          "PKG_REPO=bookworm"
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     apply-patch: root-builder-${{ matrix.runner.arch }}.patch
+     patch-cmd: |
+        mkdir -p versions/root-images
+        echo ${{ needs.conf.outputs.tag }}-stable-${{ matrix.runner.arch }} > versions/root-images/stable-${{ matrix.runner.arch }}
 
   kind-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
-    needs: [conf, kernel-images, root-images]
+    needs: [conf, kernel-images, root-images-stable, root-images-unstable]
     strategy:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
@@ -234,11 +270,12 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.runner.arch }})"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.kernel.pkg_repo }}-${{ matrix.runner.arch }})"
+          "PKG_REPO=${{ matrix.kernel.pkg_repo }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
-     apply-patch: root-images-${{ matrix.runner.arch }}.patch
+     apply-patch: root-images-${{ matrix.kernel.pkg_repo }}-${{ matrix.runner.arch }}.patch
      apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
          mkdir -p versions/kind/${{ matrix.runner.arch }}
@@ -247,7 +284,7 @@ jobs:
   # complexity-test-images is hardcoded amd64 only for now
   complexity-test-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
-    needs: [conf, kernel-images, root-images]
+    needs: [conf, kernel-images, root-images-stable, root-images-unstable]
     strategy:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
@@ -260,11 +297,12 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=$(cat versions/root-images/amd64)"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.kernel.pkg_repo }}-amd64)"
+          "PKG_REPO=${{ matrix.kernel.pkg_repo }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
      dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
-     apply-patch: root-images-amd64.patch
+     apply-patch: root-images-${{ matrix.kernel.pkg_repo }}-amd64.patch
      apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
      patch-cmd: |
          mkdir -p versions/complexity-test
@@ -272,7 +310,7 @@ jobs:
 
   commit-changes:
     if: ${{ needs.conf.outputs.run == 'y' }}
-    needs: [conf, root-images, complexity-test-images, kind-images]
+    needs: [conf, root-images-stable, root-images-unstable, complexity-test-images, kind-images]
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.push.outputs.sha }}
