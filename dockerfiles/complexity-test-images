@@ -9,7 +9,7 @@ ARG KERNEL_IMAGE_TAG=bpf-next
 
 FROM quay.io/lvh-images/root-images-ci:"${ROOT_IMAGES_TAG}" AS root-images
 FROM quay.io/lvh-images/kernel-images-ci:"${KERNEL_IMAGE_TAG}" AS kimg
-FROM quay.io/lvh-images/lvh:v0.0.27 AS lvh
+FROM quay.io/lvh-images/lvh:main AS lvh
 FROM ubuntu:latest AS builder
 
 ARG KERNEL_VER=bpf-next
@@ -43,8 +43,9 @@ COPY <<EOF /data/images.json
 ]
 EOF
 
+ARG PKG_REPO
 # mmdebstrap outputs messages in stderr, so we redirect stderr
-RUN lvh images build --image complexity-test_${KERNEL_VER}.qcow2 --dir /data 2>&1
+RUN lvh images build --image complexity-test_${KERNEL_VER}.qcow2 --pkg-repo ${PKG_REPO} --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/complexity-test_${KERNEL_VER}.qcow2
 RUN rm /data/images/*.qcow2
 
