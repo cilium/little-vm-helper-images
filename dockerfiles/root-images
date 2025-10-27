@@ -18,6 +18,9 @@ RUN lvh version
 #
 # for now we only build the kind image for arm64
 ARG TARGETARCH
+
+# debian respository used to install packages when building
+# the target image
 ARG PKG_REPO=unstable
 RUN if [ "$TARGETARCH" = "amd64" ]; then lvh images build --pkg-repo ${PKG_REPO} --dir /data 2>&1; fi
 RUN if [ "$TARGETARCH" = "arm64" ]; then LIBGUESTFS_BACKEND_SETTINGS=force_tcg lvh images build --pkg-repo ${PKG_REPO} --dir /data --image base.qcow2 --image kind.qcow2 2>&1; fi
