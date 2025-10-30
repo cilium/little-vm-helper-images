@@ -39,14 +39,23 @@ jobs:
           echo $name
           for f in $(find ./versions -type f ! -name README.md -printf "%P\n")
           do
+              # Tag is typically in the form of 20251028.102819, 20251028.102819-arm64 or 20251028.102819-unstable-amd64
               tag=$(cat ./versions/$f)
               path_arch=$(echo $f | grep -oE 'arm64|amd64' || true)
               arch_suffix=$( [ -n "$path_arch" ] && echo "-$path_arch" || true)
               path_pkg_repo=$(echo $f | grep -oE 'unstable|stable' || true)
               pkg_repo_suffix=$( [ -n "$path_pkg_repo" ] && echo "-$path_pkg_repo" || true)
               echo f=$f tag=$tag arch_suffix=$arch_suffix pkg_repo_suffix=$pkg_repo_suffix
+
+              # Build the full source image name (e.g. quay.io/lvh-images/kind-ci:6.12-20251028.102819-amd64)
+              # This is where things get weird because some specifics are only stored
+              # in the path hierarchy (kernel version) but others (arch and pkg_repo)
+              # are duplicated in the path hierarchy and the tag.  This is explained
+              # by the fact that the kernel version is part of the image name while
+              # arch and pkg_repo are part of the tag.
               src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/arm64__;s_/amd64__' | sed -e 's_/stable__;s_/unstable__' | sed -e 's_/_-ci:_; s_/_-_g')"
 
+              # Build the full destination image name (e.g. quay.io/lvh-images/kind:main-amd64)
               dst_image=$(echo $src_image | sed -e "s/$tag/$name/")
               dst_image=$(echo $dst_image | sed -e 's/-ci:/:/')
               dst_image=$(echo ${dst_image}${pkg_repo_suffix}${arch_suffix})
@@ -54,6 +63,7 @@ jobs:
               crane copy $src_image $dst_image
               # Only tag the "prod" image on pushes to main
               if [[ "$name" == "main" ]]; then
+                  # Just remove the -ci suffix from the image repo (e.g. quay.io/lvh-images/kind:20251028.102819-amd64)
                   dst_prod_image=$(echo $src_image | sed -e 's/-ci:/:/')
                   echo -e "\033[0;32m${src_image} -> ${dst_prod_image}\e[0m";
                   crane copy $src_image $dst_prod_image
