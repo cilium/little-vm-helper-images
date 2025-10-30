@@ -207,7 +207,7 @@ jobs:
      runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
-     build-tag: quay.io/lvh-images/root-images-ci:unstable-${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-unstable-${{ matrix.runner.arch }}
      build-args: |
           "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
           "PKG_REPO=sid"
@@ -216,7 +216,7 @@ jobs:
      apply-patch: root-builder-${{ matrix.runner.arch }}.patch
      patch-cmd: |
         mkdir -p versions/root-images/unstable
-        echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-images/unstable/${{ matrix.runner.arch }}
+        echo ${{ needs.conf.outputs.tag }}-unstable-${{ matrix.runner.arch }} > versions/root-images/unstable/${{ matrix.runner.arch }}
 
   root-images-stable:
     needs: [conf, root-builder]
@@ -233,7 +233,7 @@ jobs:
      runner: ${{ matrix.runner.name }}
      check-files: dockerfiles/root-images _data/images.json _data/env.sh _data/bootstrap
      build-file: dockerfiles/root-images
-     build-tag: quay.io/lvh-images/root-images-ci:stable-${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-tag: quay.io/lvh-images/root-images-ci:${{ needs.conf.outputs.tag }}-stable-${{ matrix.runner.arch }}
      build-args: |
           "ROOT_BUILDER_TAG=$(cat versions/root-builder/${{ matrix.runner.arch }})"
           "PKG_REPO=bookworm"
@@ -242,7 +242,7 @@ jobs:
      apply-patch: root-builder-${{ matrix.runner.arch }}.patch
      patch-cmd: |
         mkdir -p versions/root-images/stable
-        echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/root-images/stable/${{ matrix.runner.arch }}
+        echo ${{ needs.conf.outputs.tag }}-stable-${{ matrix.runner.arch }} > versions/root-images/stable/${{ matrix.runner.arch }}
 
   kind-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
@@ -270,7 +270,7 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=${{ matrix.kernel.pkg_repo }}-$(cat versions/root-images/${{ matrix.kernel.pkg_repo }}/${{ matrix.runner.arch }})"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.kernel.pkg_repo }}/${{ matrix.runner.arch }})"
           "PKG_REPO=${{ matrix.kernel.pkg_repo }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
@@ -297,7 +297,7 @@ jobs:
      build-args: |
           "KERNEL_VER=${{ matrix.kernel.ver }}"
           "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
-          "ROOT_IMAGES_TAG=${{ matrix.kernel.pkg_repo }}-$(cat versions/root-images/${{ matrix.kernel.pkg_repo }}/amd64)"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.kernel.pkg_repo }}/amd64)"
           "PKG_REPO=${{ matrix.kernel.pkg_repo }}"
      check-files: '.'
      base-ref: ${{ github.base_ref }}
