@@ -42,12 +42,14 @@ jobs:
               tag=$(cat ./versions/$f)
               path_arch=$(echo $f | grep -oE 'arm64|amd64' || true)
               arch_suffix=$( [ -n "$path_arch" ] && echo "-$path_arch" || true)
-              echo f=$f tag=$tag arch_suffix=$arch_suffix
+              path_pkg_repo=$(echo $f | grep -oE 'unstable|stable' || true)
+              pkg_repo_suffix=$( [ -n "$path_pkg_repo" ] && echo "-$path_pkg_repo" || true)
+              echo f=$f tag=$tag arch_suffix=$arch_suffix pkg_repo_suffix=$pkg_repo_suffix
+              src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/arm64__;s_/amd64__' | sed -e 's_/stable__;s_/unstable__' | sed -e 's_/_-ci:_; s_/_-_g')"
 
-              src_image="quay.io/lvh-images/$(echo $f/$tag | sed -e 's_/arm64__;s_/amd64__' | sed -e 's_/_-ci:_; s_/_-_g')"
               dst_image=$(echo $src_image | sed -e "s/$tag/$name/")
               dst_image=$(echo $dst_image | sed -e 's/-ci:/:/')
-              dst_image=$(echo ${dst_image}${arch_suffix})
+              dst_image=$(echo ${dst_image}${pkg_repo_suffix}${arch_suffix})
               echo -e "\033[0;32m${src_image} -> ${dst_image}\e[0m";
               crane copy $src_image $dst_image
               # Only tag the "prod" image on pushes to main
