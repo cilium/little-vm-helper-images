@@ -58,6 +58,15 @@ $ lvh  run --host-mount $(pwd) --image _data/images/base.qcow2
 - [complexity-test-images](./dockerfiles/complexity-test-images) builds kernel-specific versions of
   the complexity-test-image
 
+### Root images package repository
+
+Some packages on which the guest OS depends may not be fully compatible with the kernel version of that OS.
+To overcome that, the root images can be built by pulling packages from different debian package repositories.
+To select which package repository to pull packages from, the Dockerfiles can be passed a `PKG_REPO` variable,
+which should correspond to one of the upstream debian respositories (ex: `sid`, `bookworm`, `trixie`, etc).
+
+This value is then passed to `lvh images build` to instruct the bootstrap command appropriately.
+
 ### Rhel8
 
 Rhel8 images are a bit specials and have their own
@@ -77,16 +86,19 @@ case 'rhel8.6':
     options.platforms = 'linux/amd64'
     options.rhel_ver = '8.6'
     options.rhel_kver = '4.18.0-372.32.1.el8_6'
+    options.pkg_repo = 'bookworm'
     break
 case 'rhel8.9':
     options.dockerfile = "dockerfiles/kernel-images-rhel8"
     options.platforms = 'linux/amd64'
     options.rhel_ver = '8.9'
     options.rhel_kver = '4.18.0-513.24.1.el8_9'
+    options.pkg_repo = 'bookworm'
     break
 default:
     options.dockerfile = "dockerfiles/kernel-images"
     options.platforms = 'linux/amd64,linux/arm64'
+    options.pkg_repo = 'sid'
 ```
 
 ## GH actions
