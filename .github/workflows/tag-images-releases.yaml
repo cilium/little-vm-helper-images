@@ -113,7 +113,7 @@ jobs:
               tag=$(cat ./versions/root-images/$pkg_repo/arm64)
               multi_tag=$(echo $tag | sed 's/-\(arm64\|amd64\)$//')
               root_images_name="quay.io/lvh-images/root-images"
-              multi_image="$root_images_name:$multi_tag-$pkg_repo"
+              multi_image="$root_images_name:$multi_tag"
               amd64_image="$multi_image-amd64"
               arm64_image="$multi_image-arm64"
               docker buildx imagetools create -t $root_images_name:main-$pkg_repo -t $multi_image $amd64_image $arm64_image
