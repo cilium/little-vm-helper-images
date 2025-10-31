@@ -50,7 +50,7 @@ COPY <<EOF /data/images.json
 EOF
 
 RUN lvh version
-ARG PKG_REPO=unstable
+ARG PKG_REPO=sid
 # mmdebstrap outputs messages in stderr, so we redirect stderr
 RUN LIBGUESTFS_BACKEND_SETTINGS=force_tcg lvh images build --pkg-repo ${PKG_REPO} --image kind_${KERNEL_VER}.qcow2 --dir /data 2>&1
 RUN zstd --compress --rm --threads=0 /data/images/kind_${KERNEL_VER}.qcow2
