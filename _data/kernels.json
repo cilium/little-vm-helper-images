@@ -1,64 +1,16 @@
 {
     "kernels": [
         {
-            "name": "before-0acd03a5bd18",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-before-0acd03a5bd18",
+            "name": "bpf-next",
+            "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1",
             "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
+                [ "--enable",  "CONFIG_NETKIT"],
+                [ "--enable",  "CONFIG_FUSE_FS"]
             ]
         },
         {
-            "name": "after-0acd03a5bd18",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-after-0acd03a5bd18",
-            "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
-            ]
-        },
-        {
-            "name": "before-eabe518de533",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-before-eabe518de533",
-            "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
-            ]
-        },
-        {
-            "name": "after-eabe518de533",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-after-eabe518de533",
-            "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
-            ]
-        },
-        {
-            "name": "before-41f6f64e6999",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-before-41f6f64e6999",
-            "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
-            ]
-        },
-        {
-            "name": "after-41f6f64e6999",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-after-41f6f64e6999",
-            "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
-            ]
-        },
-        {
-            "name": "before-18a433b62061",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-before-18a433b62061",
-            "opts": [
-                 [ "--enable",  "CONFIG_NETKIT"],
-                 [ "--enable",  "CONFIG_FUSE_FS"]
-            ]
-        },
-        {
-            "name": "after-18a433b62061",
-            "url": "https://github.com/pchaigno/linux?depth=1#test-v6.8-after-18a433b62061",
+            "name": "all-insns-pruning-points",
+            "url": "https://github.com/pchaigno/linux?depth=1#all-insns-pruning-points",
             "opts": [
                  [ "--enable",  "CONFIG_NETKIT"],
                  [ "--enable",  "CONFIG_FUSE_FS"]
