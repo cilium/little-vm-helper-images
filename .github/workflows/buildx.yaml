@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['before-0acd03a5bd18', 'after-0acd03a5bd18', 'before-eabe518de533', 'after-eabe518de533', 'before-41f6f64e6999', 'after-41f6f64e6999', 'before-18a433b62061', 'after-18a433b62061']
+              var all_kernels = ['bpf-next', 'all-insns-pruning-points']
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
