@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', '6.12', 'bpf', 'bpf-net', 'bpf-next', 'rhel8.6', 'rhel8.9', 'rhel8.10' ]
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', '6.12', 'bpf', 'bpf-net', 'bpf-next', 'rhel8.9', 'rhel8.10' ]
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
@@ -82,14 +82,6 @@ jobs:
               for (const k of kernels) {
                   options = {"ver": k}
                   switch (k) {
-                      case 'rhel8.6':
-                          options.dockerfile = "dockerfiles/kernel-images-rhel8"
-                          options.platforms = 'linux/amd64'
-                          options.rhel_repo = 'vault'
-                          options.rhel_ver = '8.6'
-                          options.rhel_kver = '4.18.0-372.32.1.el8_6'
-                          options.pkg_repo = 'bookworm'
-                          break
                       case 'rhel8.9':
                           options.dockerfile = "dockerfiles/kernel-images-rhel8"
                           options.platforms = 'linux/amd64'
@@ -231,8 +223,6 @@ jobs:
           - {name: "ubuntu-latest", arch: "amd64"}
           - {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
         exclude:
-          - runner: {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
-            kernel: {ver: "rhel8.6"}
           - runner: {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
             kernel: {ver: "rhel8.9"}
           - runner: {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
