@@ -81,13 +81,6 @@ At the time of writing, this was the versions we built. You can notice that we
 also build those only for amd64 unlike the rest of the kernels.
 
 ```javascript
-case 'rhel8.6':
-    options.dockerfile = "dockerfiles/kernel-images-rhel8"
-    options.platforms = 'linux/amd64'
-    options.rhel_ver = '8.6'
-    options.rhel_kver = '4.18.0-372.32.1.el8_6'
-    options.pkg_repo = 'bookworm'
-    break
 case 'rhel8.9':
     options.dockerfile = "dockerfiles/kernel-images-rhel8"
     options.platforms = 'linux/amd64'
