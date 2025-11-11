@@ -1,13 +1,21 @@
 {
     "kernels": [
-	{
+        {
             "name": "bpf-next",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1",
             "opts": [
                  [ "--enable",  "CONFIG_NETKIT"],
                  [ "--enable",  "CONFIG_FUSE_FS"]
             ]
-	},
+        },
+        {
+            "name": "hari-patch",
+            "url": "https://github.com/pchaigno/linux?depth=1#hari-patch-tnum-step",
+            "opts": [
+                 [ "--enable",  "CONFIG_NETKIT"],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
+        },
         {
             "name": "bpf",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git?depth=1",
