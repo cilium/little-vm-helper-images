@@ -16,6 +16,15 @@
                  [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
+        {
+                "name": "oracle",
+                "url": "https://github.com/pchaigno/linux?depth=1#verifier-oracle",
+                "opts": [
+                        ["--disable", "CONFIG_CGROUP_BPF"],
+                        ["--disable", "CONFIG_BPF_LSM"],
+                        ["--enable", "CONFIG_DEBUG_KERNEL"]
+                ]
+        },
 	{
             "name": "bpf-net",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1#net",
@@ -117,11 +126,9 @@
         [ "--enable", "CONFIG_BPF_EVENTS" ],
         [ "--enable", "CONFIG_BPF_JIT_DEFAULT_ON" ],
         [ "--enable", "CONFIG_BPF_JIT" ],
-        [ "--enable", "CONFIG_BPF_LSM" ],
         [ "--enable", "CONFIG_BPF_STREAM_PARSER" ],
         [ "--enable", "CONFIG_BPF_SYSCALL" ],
         [ "--enable", "CONFIG_BPF" ],
-        [ "--enable", "CONFIG_CGROUP_BPF" ],
         [ "--enable", "CONFIG_CGROUP_DEVICE" ],
         [ "--enable", "CONFIG_CGROUP_PIDS" ],
         [ "--enable", "CONFIG_DEBUG_INFO_BTF_MODULES" ],
