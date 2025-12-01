@@ -14,7 +14,7 @@ FROM builder AS prepare
 
 ARG RHEL_REPO=pub
 ARG RHEL_VER=8.10
-ARG RHEL_KVER=4.18.0-553.79.1.el8_10
+ARG RHEL_KVER=4.18.0-553.89.1.el8_10
 
 WORKDIR /tmp
 RUN curl -LO "https://dl.rockylinux.org/${RHEL_REPO}/rocky/${RHEL_VER}/BaseOS/source/tree/Packages/k/kernel-${RHEL_KVER}.src.rpm"
