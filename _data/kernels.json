@@ -16,6 +16,16 @@
                  [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
+        {
+                "name": "oracle",
+                "url": "https://github.com/pchaigno/linux?depth=1#verifier-oracle",
+                "opts": [
+                        ["--disable", "CONFIG_CGROUP_BPF"],
+                        ["--disable", "CONFIG_BPF_LSM"],
+                        ["--enable", "CONFIG_DEBUG_KERNEL"],
+                        ["--enable", "CONFIG_BPF_ORACLE"]
+                ]
+        },
 	{
             "name": "bpf-net",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git?depth=1#net",
@@ -115,13 +125,11 @@
         [ "--disable", "CONFIG_WLAN" ],
         [ "--enable", "CONFIG_9P_FS" ],
         [ "--enable", "CONFIG_BPF_EVENTS" ],
-        [ "--enable", "CONFIG_BPF_JIT_DEFAULT_ON" ],
+        [ "--disable", "CONFIG_BPF_JIT_DEFAULT_ON" ],
         [ "--enable", "CONFIG_BPF_JIT" ],
-        [ "--enable", "CONFIG_BPF_LSM" ],
         [ "--enable", "CONFIG_BPF_STREAM_PARSER" ],
         [ "--enable", "CONFIG_BPF_SYSCALL" ],
         [ "--enable", "CONFIG_BPF" ],
-        [ "--enable", "CONFIG_CGROUP_BPF" ],
         [ "--enable", "CONFIG_CGROUP_DEVICE" ],
         [ "--enable", "CONFIG_CGROUP_PIDS" ],
         [ "--enable", "CONFIG_DEBUG_INFO_BTF_MODULES" ],
@@ -135,7 +143,7 @@
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_REGS" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS" ],
         [ "--enable", "CONFIG_DYNAMIC_FTRACE_WITH_ARGS" ],
-        [ "--enable", "CONFIG_HAVE_EBPF_JIT" ],
+        [ "--disable", "CONFIG_HAVE_EBPF_JIT" ],
         [ "--enable", "CONFIG_IPC_NS" ],
         [ "--enable", "CONFIG_LOCALVERSION_AUTO" ],
         [ "--enable", "CONFIG_LWTUNNEL" ],
