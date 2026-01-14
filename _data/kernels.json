@@ -24,6 +24,150 @@
                  [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
+    {
+        "name": "commit-e434b8cdf788",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-e434b8cdf788",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-2589726d12a1",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-2589726d12a1",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-13fbcee55706",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-13fbcee55706",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-904e6ddf4133",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-904e6ddf4133",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-2793a8b015f7",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-2793a8b015f7",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-cafe2c21508a",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-cafe2c21508a",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-4bf79f9be434",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-4bf79f9be434",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-c9e31900b54c",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-c9e31900b54c",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-b3698c356ad9",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-b3698c356ad9",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-e434b8cdf788",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-e434b8cdf788",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-2589726d12a1",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-2589726d12a1",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-13fbcee55706",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-13fbcee55706",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-904e6ddf4133",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-904e6ddf4133",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-2793a8b015f7",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-2793a8b015f7",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-cafe2c21508a",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-cafe2c21508a",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-4bf79f9be434",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-4bf79f9be434",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-c9e31900b54c",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-c9e31900b54c",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
+    {
+        "name": "commit-before-b3698c356ad9",
+        "url": "https://github.com/pchaigno/linux?depth=1#commit-before-b3698c356ad9",
+        "opts": [
+            [ "--enable",  "CONFIG_FUSE_FS"],
+            [ "--enable",  "CONFIG_BPF_JIT_ALWAYS_ON"]
+        ]
+    },
         {
             "name": "6.18",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.18.y",
