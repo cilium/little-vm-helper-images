@@ -1,0 +1,61 @@
+# syntax=docker/dockerfile:1.3-labs
+# vim: set ft=dockerfile:
+
+FROM quay.io/lvh-images/lvh:v0.0.27 AS lvh
+
+FROM centos:7 AS builder
+
+# Fix CentOS 7 repos (EOL)
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
+COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
+
+RUN yum install -y yum-utils rpm-build make curl patch
+
+FROM builder AS prepare
+
+WORKDIR /tmp
+RUN curl -LO "https://vault.centos.org/centos/7/os/Source/SPackages/kernel-3.10.0-1160.el7.src.rpm"
+RUN rpm -ivh kernel*.src.rpm
+RUN rm kernel*.src.rpm
+
+WORKDIR /root/rpmbuild/SPECS
+RUN echo "%_with_baseonly 1" >> $HOME/.rpmmacros && yum-builddep -y kernel.spec
+RUN rpmbuild -bp kernel.spec --with baseonly
+
+RUN ln -s /root/rpmbuild/BUILD/kernel-*/linux-* /tmp/build
+WORKDIR /tmp/build
+
+# Emulate InitBuildVars() from kernel.spec
+RUN make -s mrproper
+RUN cp configs/kernel-*-$(uname -m).config .config
+
+# Remove all RHEL modules
+RUN sed --in-place -E -e 's/^(CONFIG_[^=]+)=m/# \1 is not set/' .config
+
+COPY _data/kernels.json /data/kernels.json
+
+ARG TARGETARCH
+RUN lvh kernels --dir /data raw_configure --arch $TARGETARCH . rhel7 2>&1
+
+FROM prepare AS build
+
+RUN make -j $(nproc) tar-pkg
+
+FROM debian:trixie AS build-dwarves
+
+RUN apt-get update && apt-get install --no-install-recommends --assume-yes \
+    dwarves \
+    zstd \
+    && \
+    apt-get remove --assume-yes --auto-remove && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /tmp/build/tar-install /tmp/build/tar-install
+
+COPY scripts/generate-btf.sh /tmp/
+RUN /tmp/generate-btf.sh /tmp/build/tar-install
+
+FROM busybox as kernel
+COPY --from=build-dwarves /tmp/build/tar-install /data/kernels/rhel7

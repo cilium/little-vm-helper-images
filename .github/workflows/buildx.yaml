@@ -57,7 +57,7 @@ jobs:
         name: kernel versions
         with:
           script: |
-              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', '6.12', '6.18', 'bpf', 'bpf-net', 'bpf-next', 'rhel8.9', 'rhel8.10' ]
+              var all_kernels = ['4.19', '5.4', '5.10', '5.15', '6.1', '6.6', '6.12', '6.18', 'bpf', 'bpf-net', 'bpf-next', 'rhel8.9', 'rhel8.10', 'rhel7' ]
               var kernels = []
               const kernel_label_prefix = 'gha-builds/kernel/'
               res = await github.rest.issues.listLabelsOnIssue({
@@ -97,6 +97,11 @@ jobs:
                           options.rhel_ver = '8.10'
                           options.rhel_kver = '4.18.0-553.89.1.el8_10'
                           options.pkg_repo = 'bookworm'
+                          break
+                      case 'rhel7':
+                          options.dockerfile = "dockerfiles/kernel-images-rhel7"
+                          options.platforms = 'linux/amd64'
+                          options.pkg_repo = 'bullseye'
                           break
                       case '5.4':
                       case '4.19':
