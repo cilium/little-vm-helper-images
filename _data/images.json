@@ -78,7 +78,8 @@
             "ethtool",
             "systemd-resolved",
             "ntpsec-ntpdate",
-            "bind9-dnsutils"
+            "bind9-dnsutils",
+            "socat"
         ],
         "actions": [
             {
