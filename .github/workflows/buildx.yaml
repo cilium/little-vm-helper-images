@@ -249,6 +249,40 @@ jobs:
          mkdir -p versions/kind/${{ matrix.runner.arch }}
          echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/kind/${{ matrix.runner.arch }}/${{ matrix.kernel.ver }}
 
+  kind-tetragon-images:
+    if: ${{ needs.conf.outputs.run == 'y' }}
+    needs: [conf, kernel-images, root-images]
+    strategy:
+      matrix:
+        kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
+        runner:
+          - {name: "ubuntu-latest", arch: "amd64"}
+          - {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
+        exclude:
+          - runner: {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
+            kernel: {ver: "rhel8.9"}
+          - runner: {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
+            kernel: {ver: "rhel8.10"}
+    uses: ./.github/workflows/buildx-stage.yaml
+    secrets: inherit
+    with:
+     name: kind-tetragon-image-${{ matrix.kernel.ver }}-${{ matrix.runner.arch }}
+     runner: ${{ matrix.runner.name }}
+     build-file: dockerfiles/kind-tetragon-images
+     build-tag: quay.io/lvh-images/kind-tetragon-ci:${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }}
+     build-args: |
+          "KERNEL_VER=${{ matrix.kernel.ver }}"
+          "KERNEL_IMAGE_TAG=${{ matrix.kernel.ver }}-${{ needs.conf.outputs.tag }}"
+          "ROOT_IMAGES_TAG=$(cat versions/root-images/${{ matrix.kernel.pkg_repo }}/${{ matrix.runner.arch }})"
+          "PKG_REPO=${{ matrix.kernel.pkg_repo }}"
+     check-files: 'dockerfiles/kind-tetragon-images versions/kind-tetragon'
+     base-ref: ${{ github.base_ref }}
+     dry-run: ${{ needs.conf.outputs.dry-run == 'y' }}
+     apply-patch: root-images-${{ matrix.kernel.pkg_repo }}-${{ matrix.runner.arch }}.patch
+     apply-patch-2: kernel-image-${{ matrix.kernel.ver }}.patch
+     patch-cmd: |
+         mkdir -p versions/kind-tetragon/${{ matrix.runner.arch }}
+         echo ${{ needs.conf.outputs.tag }}-${{ matrix.runner.arch }} > versions/kind-tetragon/${{ matrix.runner.arch }}/${{ matrix.kernel.ver }}
   # complexity-test-images is hardcoded amd64 only for now
   complexity-test-images:
     if: ${{ needs.conf.outputs.run == 'y' }}
@@ -278,7 +312,7 @@ jobs:
 
   commit-changes:
     if: ${{ needs.conf.outputs.run == 'y' }}
-    needs: [conf, root-images, complexity-test-images, kind-images]
+    needs: [conf, root-images, complexity-test-images, kind-images, kind-tetragon-images]
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.push.outputs.sha }}
