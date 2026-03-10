@@ -24,6 +24,14 @@
                  [ "--enable",  "CONFIG_FUSE_FS"]
             ]
 	},
+    {
+            "name": "fix-invariant-violations",
+            "url": "https://github.com/pchaigno/linux?depth=1#fix-invariant-violations",
+            "opts": [
+                 [ "--enable",  "CONFIG_NETKIT"],
+                 [ "--enable",  "CONFIG_FUSE_FS"]
+            ]
+    },
         {
             "name": "6.18",
             "url": "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?depth=1#linux-6.18.y",
