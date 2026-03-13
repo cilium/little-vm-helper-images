@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Get token
         id: app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # 2.2.1
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # 2.2.2
         with:
           app-id: ${{ secrets.AUTO_COMMITTER_LVH_APP_ID }}
           private-key: ${{ secrets.AUTO_COMMITTER_LVH_PRIVATE_KEY }}
