@@ -82,10 +82,10 @@ jobs:
               arm64_image="$multi_image-arm64"
               docker buildx imagetools create -t $kind_image_name:$f-main -t $multi_image $amd64_image $arm64_image
           done
-      - name: tag amd64 mono-arch rhel8 images
+      - name: tag amd64 mono-arch rhel images
         run: |
-          # tag without the arch suffix for rhel8 since we only build for amd64
-          for f in $(find ./versions/kind/amd64/ -type f -name rhel8* -printf "%P\n")
+          # tag without the arch suffix for rhel since we only build for amd64
+          for f in $(find ./versions/kind/amd64/ -type f \( -name 'rhel8*' -o -name 'rhel9*' \) -printf "%P\n")
           do
               tag=$(cat ./versions/kind/amd64/$f)
               kind_image_name="quay.io/lvh-images/kind"

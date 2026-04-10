@@ -1,0 +1,65 @@
+# syntax=docker/dockerfile:1.3-labs
+# vim: set ft=dockerfile:
+
+FROM quay.io/lvh-images/lvh:v0.0.29 AS lvh
+
+FROM rockylinux:9 AS builder
+
+COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
+
+ARG RHEL_REPO=vault
+ARG RHEL_VER=9.6
+
+# Pin to 9.6 (default is 9.7)
+RUN sed -i \
+    -e 's|^mirrorlist=|#mirrorlist=|g' \
+    -e "s|^#baseurl=http://dl.rockylinux.org/\$contentdir/\$releasever|baseurl=https://dl.rockylinux.org/${RHEL_REPO}/rocky/${RHEL_VER}|g" \
+    /etc/yum.repos.d/rocky*.repo
+
+RUN dnf install -y 'dnf-command(builddep)' 'dnf-command(config-manager)'
+RUN dnf config-manager --set-enabled crb
+
+FROM builder AS prepare
+
+ARG RHEL_REPO=vault
+ARG RHEL_VER=9.6
+ARG RHEL_KVER=5.14.0-570.58.1.el9_6
+
+WORKDIR /tmp
+RUN curl -LO "https://dl.rockylinux.org/${RHEL_REPO}/rocky/${RHEL_VER}/BaseOS/source/tree/Packages/k/kernel-${RHEL_KVER}.src.rpm"
+RUN rpm -ivh kernel*.src.rpm
+RUN rm kernel*.src.rpm
+
+WORKDIR /root/rpmbuild/SPECS
+RUN dnf builddep -y --define '_with_baseonly 1' kernel.spec
+RUN rpmbuild -bp kernel.spec --with baseonly
+
+RUN ln -s /root/rpmbuild/BUILD/kernel-*/linux-* /tmp/build
+WORKDIR /tmp/build
+
+RUN mkdir patches
+COPY patches/rhel9/*.patch patches/
+RUN for p in patches/*.patch; do echo "Applying $p"; patch -p1 < "$p" || exit 1; done
+
+# Emulate InitBuildVars() from kernel.spec
+RUN make -s mrproper
+RUN cp configs/kernel-*-$(uname -m).config .config
+
+# Remove all RHEL modules
+RUN sed --in-place -E -e 's/^(CONFIG_[^=]+)=m/# \1 is not set/' .config
+
+COPY _data /data
+
+ARG TARGETARCH
+RUN lvh kernels --dir /data raw_configure --arch $TARGETARCH . rhel9 2>&1
+
+FROM prepare AS build
+
+RUN make -j $(nproc) tar-pkg
+
+COPY scripts/generate-btf.sh /tmp/
+RUN /tmp/generate-btf.sh /tmp/build/tar-install
+
+FROM busybox as kernel
+ARG RHEL_VER=9.6
+COPY --from=build /tmp/build/tar-install /data/kernels/rhel${RHEL_VER}
