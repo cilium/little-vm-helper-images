@@ -1,0 +1,134 @@
+From: Martynas <martynas@isovalent.com>
+Date: Tue, 14 Apr 2026 00:00:00 +0000
+Subject: [PATCH] 9p: missing backports
+
+RHEL 9.6 kernel converted to the folio API, but did not convert the 9p fs. The
+following commits are missing for the 9p:
+
+* 8fb72b4a7693 fscache: Convert fscache_set_page_dirty() to fscache_dirty_folio()
+* a26d3411bbdd 9p: Convert to release_folio
+* 040cdd4bf90e 9p: Convert to invalidate_folio
+* 76dba927201d 9p: Convert from launder_page to launder_folio
+
+In addition, iov_iter_get_pages_alloc() was changed by adding 5th parameter.
+
+---
+--- a/fs/9p/vfs_addr.c
++++ b/fs/9p/vfs_addr.c
+@@ -99,43 +99,29 @@
+ };
+ 
+ /**
+- * v9fs_release_page - release the private state associated with a page
+- * @page: The page to be released
+- * @gfp: The caller's allocation restrictions
+- *
+- * Returns 1 if the page can be released, false otherwise.
++ * v9fs_release_folio - release the private state associated with a folio
+  */
+ 
+-static int v9fs_release_page(struct page *page, gfp_t gfp)
++static bool v9fs_release_folio(struct folio *folio, gfp_t gfp)
+ {
+-	struct folio *folio = page_folio(page);
+ 	struct inode *inode = folio_inode(folio);
+ 
+ 	if (folio_test_private(folio))
+-		return 0;
++		return false;
+ #ifdef CONFIG_9P_FSCACHE
+ 	if (folio_test_fscache(folio)) {
+ 		if (current_is_kswapd() || !(gfp & __GFP_FS))
+-			return 0;
++			return false;
+ 		folio_wait_fscache(folio);
+ 	}
+ #endif
+ 	fscache_note_page_release(v9fs_inode_cookie(V9FS_I(inode)));
+-	return 1;
++	return true;
+ }
+ 
+-/**
+- * v9fs_invalidate_page - Invalidate a page completely or partially
+- * @page: The page to be invalidated
+- * @offset: offset of the invalidated region
+- * @length: length of the invalidated region
+- */
+-
+-static void v9fs_invalidate_page(struct page *page, unsigned int offset,
+-				 unsigned int length)
++static void v9fs_invalidate_folio(struct folio *folio, size_t offset,
++				  size_t length)
+ {
+-	struct folio *folio = page_folio(page);
+-
+ 	folio_wait_fscache(folio);
+ }
+ 
+@@ -216,15 +202,10 @@
+ }
+ 
+ /**
+- * v9fs_launder_page - Writeback a dirty page
+- * @page: The page to be cleaned up
+- *
+- * Returns 0 on success.
++ * v9fs_launder_folio - Writeback a dirty folio
+  */
+-
+-static int v9fs_launder_page(struct page *page)
++static int v9fs_launder_folio(struct folio *folio)
+ {
+-	struct folio *folio = page_folio(page);
+ 	int retval;
+ 
+ 	if (folio_clear_dirty_for_io(folio)) {
+@@ -341,25 +322,25 @@
+  * Mark a page as having been made dirty and thus needing writeback.  We also
+  * need to pin the cache object to write back to.
+  */
+-static int v9fs_set_page_dirty(struct page *page)
++static bool v9fs_dirty_folio(struct address_space *mapping, struct folio *folio)
+ {
+-	struct v9fs_inode *v9inode = V9FS_I(page->mapping->host);
++	struct v9fs_inode *v9inode = V9FS_I(mapping->host);
+ 
+-	return fscache_set_page_dirty(page, v9fs_inode_cookie(v9inode));
++	return fscache_dirty_folio(mapping, folio, v9fs_inode_cookie(v9inode));
+ }
+ #else
+-#define v9fs_set_page_dirty __set_page_dirty_nobuffers
++#define v9fs_dirty_folio filemap_dirty_folio
+ #endif
+ 
+ const struct address_space_operations v9fs_addr_operations = {
+ 	.read_folio = netfs_read_folio,
+ 	.readahead = netfs_readahead,
+-	.set_page_dirty = v9fs_set_page_dirty,
++	.dirty_folio = v9fs_dirty_folio,
+ 	.writepage = v9fs_vfs_writepage,
+ 	.write_begin = v9fs_write_begin,
+ 	.write_end = v9fs_write_end,
+-	.releasepage = v9fs_release_page,
+-	.invalidatepage = v9fs_invalidate_page,
+-	.launder_page = v9fs_launder_page,
++	.release_folio = v9fs_release_folio,
++	.invalidate_folio = v9fs_invalidate_folio,
++	.launder_folio = v9fs_launder_folio,
+ 	.direct_IO = v9fs_direct_IO,
+ };
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -331,7 +331,7 @@
+ 			if (err == -ERESTARTSYS)
+ 				return err;
+ 		}
+-		n = iov_iter_get_pages_alloc(data, pages, count, offs);
++		n = iov_iter_get_pages_alloc(data, pages, count, offs, 0);
+ 		if (n < 0)
+ 			return n;
+ 		*need_drop = 1;
+--
+2.43.0
+
