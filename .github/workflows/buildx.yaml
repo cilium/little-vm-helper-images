@@ -278,6 +278,9 @@ jobs:
          echo ${{ needs.conf.outputs.tag}} > versions/complexity-test/${{ matrix.kernel.ver }}
 
   commit-changes:
+    permissions:
+      contents: write
+      statuses: write
     if: ${{ needs.conf.outputs.run == 'y' }}
     needs: [conf, root-images, complexity-test-images, kind-images]
     runs-on: ubuntu-latest
@@ -326,6 +329,8 @@ jobs:
             })
 
   print_image_kernels:
+    permissions:
+      pull-requests: write
     needs: [conf, commit-changes]
     if: ${{ needs.conf.outputs.run == 'y' && needs.commit-changes.result == 'success' &&  needs.conf.outputs.dry-run != 'y' }}
     strategy:
@@ -442,6 +447,8 @@ jobs:
              })
 
   finalize:
+    permissions:
+      statuses: write
     needs: [conf, commit-changes, print_image_kernels]
     runs-on: ubuntu-latest
     if: ${{ always() }}
