@@ -193,6 +193,7 @@
     },
     {
         "name": "complexity-test.qcow2",
+        "image_size": "10G",
         "packages": [
             "ca-certificates",
             "curl",
