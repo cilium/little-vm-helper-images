@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       - name: Cleanup Disk space in runner
-        uses: cilium/cilium/.github/actions/disk-cleanup@460eba0b3b7ff63c7c240aeda21cfc3f7381799b # main
+        uses: cilium/cilium/.github/actions/disk-cleanup@3ee0933036e5ba96af8f7517a8f535a2fd6bf294 # main
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -109,10 +109,10 @@ jobs:
 
       - name: setup buildx
         if: ${{ steps.check.outputs.build == 'y' && !inputs.dry-run }}
-        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
       - name: quay login
         if: ${{ steps.check.outputs.build == 'y' && !inputs.dry-run }}
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
