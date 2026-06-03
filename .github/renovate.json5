@@ -14,6 +14,9 @@
     '_data/bootstrap/kind.sh',
     '_data/bootstrap/deb-k8s.sh',
   ],
+  "schedule": [
+    "on monday"
+  ],
   pinDigests: true,
   ignorePresets: [
     ':prHourlyLimit2',
@@ -51,6 +54,13 @@
       // Don't build images for PRs updating Github actions only
       addLabels: [
         'gha-builds/just-dont',
+      ],
+    },
+    {
+      groupName: 'all bootstrap dependencies',
+      groupSlug: 'all-bootstrap',
+      matchFileNames: [
+        '_data/bootstrap/**',
       ],
     },
   ],
