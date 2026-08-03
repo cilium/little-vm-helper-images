@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       - name: Cleanup Disk space in runner
-        uses: cilium/cilium/.github/actions/disk-cleanup@540dbfba0f5258389532de350449b0a38e47c3d6 # main
+        uses: cilium/cilium/.github/actions/disk-cleanup@14b04d4af10cbeb6f7b79923f170c51b138774ef # main
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
