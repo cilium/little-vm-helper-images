@@ -28,7 +28,7 @@ jobs:
           URL="https://github.com/google/go-containerregistry/releases/download/${VERSION}/go-containerregistry_Linux_x86_64.tar.gz"
           curl -fSL $URL | sudo tar -xz -C /usr/local/bin crane
       - name: quay login
-        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7 # v4.5.1
+        uses: docker/login-action@371161bbe7024a29a25c5e19bfcbc0804fe9ad2c # v4.5.2
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
