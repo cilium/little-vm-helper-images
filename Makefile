@@ -5,6 +5,7 @@ ROOT_IMAGES               ?= $(OCIORG)/root-images-ci
 KERNEL_BUILDER            ?= $(OCIORG)/kernel-builder-ci
 KERNEL_IMAGES             ?= $(OCIORG)/kernel-images-ci
 KIND_IMAGES               ?= $(OCIORG)/kind-ci
+KIND_TETRAGON_IMAGES      ?= $(OCIORG)/kind-tetragon-ci
 COMPLEXITY_TEST_IMAGES    ?= $(OCIORG)/complexity-test-ci
 
 KERNEL_BUILDER_TAG        ?= main
@@ -68,6 +69,17 @@ kind: kernel-images root-images
 			--build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
 			-f dockerfiles/kind-images -t $(KIND_IMAGES):$$v . ; \
 	done
+
+.PHONY: kind-tetragon
+kind-tetragon: kernel-images root-images
+    for v in $(KERNEL_VERSIONS) ; do \
+         $(DOCKER) build --no-cache \
+            --build-arg KERNEL_VER=$$v \
+            --build-arg KERNEL_IMAGE_TAG=$$v \
+            --build-arg ROOT_BUILDER_TAG=$(ROOT_BUILDER_TAG) \
+            --build-arg ROOT_IMAGES_TAG=$(ROOT_IMAGES_TAG) \
+            -f dockerfiles/kind-tetragon-images -t $(KIND_TETRAGON_IMAGES):$$v . ; \
+    done
 
 .PHONY: complexity-test
 complexity-test: kernel-images root-images
