@@ -133,8 +133,11 @@ jobs:
   kernel-builder:
     needs: [conf]
     if: ${{ needs.conf.outputs.run == 'y' }}
+    permissions:
+      contents: read
+      # Required by the Quay OIDC token exchange.
+      id-token: write
     uses: ./.github/workflows/buildx-stage.yaml
-    secrets: inherit
     with:
      name: kernel-builder
      build-file: dockerfiles/kernel-builder
@@ -152,8 +155,11 @@ jobs:
     strategy:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
+    permissions:
+      contents: read
+      # Required by the Quay OIDC token exchange.
+      id-token: write
     uses: ./.github/workflows/buildx-stage.yaml
-    secrets: inherit
     with:
      name: kernel-image-${{ matrix.kernel.ver }}
      build-file: ${{ matrix.kernel.dockerfile }}
@@ -180,8 +186,11 @@ jobs:
         runner:
           - {name: "ubuntu-latest", arch: "amd64"}
           - {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
+    permissions:
+      contents: read
+      # Required by the Quay OIDC token exchange.
+      id-token: write
     uses: ./.github/workflows/buildx-stage.yaml
-    secrets: inherit
     with:
      name: root-builder-${{ matrix.runner.arch }}
      runner: ${{ matrix.runner.name }}
@@ -205,8 +214,11 @@ jobs:
         pkg_repo:
           - "bookworm"
           - "sid"
+    permissions:
+      contents: read
+      # Required by the Quay OIDC token exchange.
+      id-token: write
     uses: ./.github/workflows/buildx-stage.yaml
-    secrets: inherit
     with:
      name: root-images-${{ matrix.pkg_repo }}-${{ matrix.runner.arch }}
      runner: ${{ matrix.runner.name }}
@@ -239,8 +251,11 @@ jobs:
             kernel: {ver: "rhel8.10"}
           - runner: {name: "oracle-vm-16cpu-64gb-arm64", arch: "arm64"}
             kernel: {ver: "rhel9.6"}
+    permissions:
+      contents: read
+      # Required by the Quay OIDC token exchange.
+      id-token: write
     uses: ./.github/workflows/buildx-stage.yaml
-    secrets: inherit
     with:
      name: kind-image-${{ matrix.kernel.ver }}-${{ matrix.runner.arch }}
      runner: ${{ matrix.runner.name }}
@@ -267,8 +282,11 @@ jobs:
     strategy:
       matrix:
         kernel: ${{ fromJSON(needs.conf.outputs.kvers) }}
+    permissions:
+      contents: read
+      # Required by the Quay OIDC token exchange.
+      id-token: write
     uses: ./.github/workflows/buildx-stage.yaml
-    secrets: inherit
     with:
      name: complexity-test-${{ matrix.kernel.ver }}-amd64
      build-file: dockerfiles/complexity-test-images
