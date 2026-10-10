@@ -183,6 +183,7 @@
         [ "--enable", "CONFIG_NET_TC_SKB_EXT" ],
         [ "--enable", "CONFIG_PID_NS" ],
         [ "--enable", "CONFIG_SKB_EXTENSIONS" ],
+        [ "--enable", "CONFIG_TCP_AO" ],
         [ "--enable", "CONFIG_TIME_NS" ],
         [ "--enable", "CONFIG_USER_NS" ],
         [ "--enable", "CONFIG_UTS_NS" ],
