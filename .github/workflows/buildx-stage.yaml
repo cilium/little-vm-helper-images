@@ -51,7 +51,7 @@ jobs:
       deployment: false
     steps:
       - name: Cleanup Disk space in runner
-        uses: cilium/cilium/.github/actions/disk-cleanup@7c11a349512b9cf9131e9750a1638b97d83a9897 # main
+        uses: cilium/cilium/.github/actions/disk-cleanup@f70d0db4e1f2c7d065fea9aca51c5bff3568bfe0 # main
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
