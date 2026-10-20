@@ -8,22 +8,14 @@ FROM rockylinux:9 AS builder
 COPY --from=lvh /usr/bin/lvh /usr/bin/lvh
 
 ARG RHEL_REPO=vault
-ARG RHEL_VER=9.6
-
-# Pin to 9.6 (default is 9.7)
-RUN sed -i \
-    -e 's|^mirrorlist=|#mirrorlist=|g' \
-    -e "s|^#baseurl=http://dl.rockylinux.org/\$contentdir/\$releasever|baseurl=https://dl.rockylinux.org/${RHEL_REPO}/rocky/${RHEL_VER}|g" \
-    /etc/yum.repos.d/rocky*.repo
+ARG RHEL_VER=9.7
 
 RUN dnf install -y 'dnf-command(builddep)' 'dnf-command(config-manager)'
 RUN dnf config-manager --set-enabled crb
 
 FROM builder AS prepare
 
-ARG RHEL_REPO=vault
-ARG RHEL_VER=9.6
-ARG RHEL_KVER=5.14.0-570.58.1.el9_6
+ARG RHEL_KVER=5.14.0-611.55.1.el9_7
 
 WORKDIR /tmp
 RUN curl -LO "https://dl.rockylinux.org/${RHEL_REPO}/rocky/${RHEL_VER}/BaseOS/source/tree/Packages/k/kernel-${RHEL_KVER}.src.rpm"
@@ -61,5 +53,5 @@ COPY scripts/generate-btf.sh /tmp/
 RUN /tmp/generate-btf.sh /tmp/build/tar-install
 
 FROM busybox as kernel
-ARG RHEL_VER=9.6
+ARG RHEL_VER=9.7
 COPY --from=build /tmp/build/tar-install /data/kernels/rhel${RHEL_VER}
